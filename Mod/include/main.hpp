@@ -23,7 +23,7 @@
 #include "game/GameData/GameDataFunction.h"
 #include "game/Actors/Shine.h"
 #include "game/HakoniwaSequence/HakoniwaSequence.h"
-#include "game/UI/MenuSelectParts.h"
+#include "al/layout/MenuSelectParts.h"
 #include "game/StageScene/StageSceneStateServerConfig.hpp"
 #include "game/System/Application.h"
 
