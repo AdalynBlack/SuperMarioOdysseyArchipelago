@@ -11,7 +11,7 @@ B59E28 B seadPrintHook // sead::system::print
 5359DC:
     MOV X0, X19 // move GameSystem to arg register
     BL setupDebugMenu
-    
+
 50F258: // HakoniwaSequence::drawMain+80
     MOV X0, X19 // HakoniwaSequence
     MOV X1, SP // viewport
@@ -21,7 +21,7 @@ B59E28 B seadPrintHook // sead::system::print
 // Main Stuff
 
 // HakoniwaStateDemoOpening::exeLoad(HakoniwaStateDemoOpening *this)
-512ae8 BL onNewGameDemoStart
+512AE8 BL onNewGameDemoStart
 
 // WorldHeap
 5145c8 CMP W20, 500
@@ -327,6 +327,7 @@ B59E28 B seadPrintHook // sead::system::print
 
 // Pause Menu Changes
 
+// StageSceneStatePauseMenu::exeWait
 4EAEC4 B overrideNerveHook // makes any button on pause menu run a specific nerve
 4EA104 MOV W2, #5 // update state count to account for new custom state
 4EA1F0 BL initNerveStateHook // inits options nerve state and server config state
@@ -353,3 +354,87 @@ B59E28 B seadPrintHook // sead::system::print
 
 // 891394 BL drawInitHook
 // 91328 BL updateInitHook
+
+// StageSceneStatePauseMenu::StageSceneStatePauseMenu
+// Changes #6 to #7 to register the extra menu part
+4E9F20 ORR W5, WZR, #6
+
+// Set the number of menu buttons to 6
+4EBA68 MOV W1, #0x5
+4EAADC MOV W1, #0x5
+
+// Title Indices
+18AF55C:
+    .word 00
+    .word 01
+    .word 02
+    .word 03
+    .word 05
+    .word 06
+
+// Pause Indices
+18AF574:
+    .word 00
+    .word 01
+    .word 03
+    .word 04
+    .word 05
+    .word 06
+
+// This shifted the Pause Indices from 18AF570 to 18AF574. Now we need to update every reference to this address
+1F8FA0 ADD X26, X26, #0x574
+1F9070 ADD X23, X23, #0x574
+
+1F918C ADD X11, X11, #0x574
+
+1F91E8 ADD X10, X10, #0x574
+
+1F9250 ADD X11, X11, #0x574
+
+1F929C ADD X11, X11, #0x574
+
+1F92EC ADD X11, X11, #0x574
+
+1F932C ADD X11, X11, #0x574
+
+1F932C ADD X11, X11, #0x574
+
+1F937C ADD X11, X11, #0x574
+
+1F93BC ADD X11, X11, #0x574
+
+1F940C ADD X11, X11, #0x574
+
+1F944C ADD X11, X11, #0x574
+
+1F949C ADD X11, X11, #0x574
+
+1F94DC ADD X11, X11, #0x574
+
+1F952C ADD X11, X11, #0x574
+
+1F956C ADD X11, X11, #0x574
+
+1F9598 ADD X10, X10, #0x574
+
+1F95F8 ADD X25, X25, #0x574
+1F96F4 ADD X10, X10, #0x574
+
+1F97A0 ADD X10, X10, #0x574
+
+1F991C ADD X22, X22, #0x574
+
+1F991C ADD X22, X22, #0x574
+1F9A70 ADD X20, X20, #0x574
+
+1F9B78 ADD X12, X12, #0x574
+1F9D04 ADD X21, X21, #0x574
+
+1F9D04 ADD X21, X21, #0x574
+1F9DEC ADD X11, X11, #0x574
+
+1F9EC4 ADD X11, X11, #0x574
+
+// Take all of "this" instead of just part of it
+4EAF8C MOV X0, X19
+4EAF9C B setAPNerve

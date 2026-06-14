@@ -4,6 +4,7 @@
 #include "al/execute/ExecuteOrder.h"
 #include "al/execute/ExecuteTable.h"
 #include "al/execute/ExecuteTableHolderDraw.h"
+#include "al/nerve/Nerve.h"
 #include "al/util/GraphicsUtil.h"
 #include "container/seadSafeArray.h"
 #include "game/GameData/GameDataHolderAccessor.h"
@@ -14,6 +15,8 @@
 #include "game/Player/PlayerCostumeInfo.h"
 #include "game/Layouts/ShopLayoutInfo.h"
 #include "game/Layouts/CommonHorizontalList.h"
+#include "game/StageScene/StageSceneStatePauseMenu.h"
+#include "al/layout/MenuSelectParts.h"
 #include "heap/seadHeap.h"
 #include "math/seadVector.h"
 #include "server/Client.hpp"
@@ -1083,6 +1086,23 @@ void seadPrintHook(const char *fmt, ...)
 	va_start(args, fmt);
 
     Logger::log(fmt, args);
-
     va_end(args);
+}
+
+void setAPNerve(StageSceneStatePauseMenu *menu) {
+    MenuSelectParts *selectParts = menu->mSelectParts;
+    int TitleIndices[] = {0, 1, 2, 3, 5, 6};
+    int PauseIndices[] = {0, 1, 3, 4, 5, 6};
+
+    int *indices = PauseIndices;
+
+    if (selectParts->isMenuMain != false) {
+        indices = TitleIndices;
+    }
+
+    if (indices[selectParts->mCursorItemIdx] == 6 && al::isNerve(selectParts, &nrvMenuSelectPartsHide)) {
+        al::setNerve(menu, &nrvStageSceneStatePauseMenuServerConfig);
+    } else {
+        al::updateKitListPost(menu->mHost);
+    }
 }
