@@ -50,6 +50,7 @@ static int gameInfSendTimer = 0;
 static int checksSyncTimer = 0;
 static bool isRecordCapture = false;
 static int updateCounterTimer = 0;
+static int messageShiftTimer = 0;
 
 void updatePlayerInfo(GameDataHolderAccessor holder, PlayerActorBase* playerBase, bool isYukimaru) {
     
