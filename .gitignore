@@ -37,3 +37,4 @@ World/smo/Connector/__pycache__/Packets.cpython-310.pyc
 World/smo/Connector/__pycache__/Player.cpython-310.pyc
 World/smo/rstb/__pycache__/rstb.cpython-310.pyc
 World/smo/sarc/__pycache__/sarc.cpython-310.pyc
+**/*.gdbinit
