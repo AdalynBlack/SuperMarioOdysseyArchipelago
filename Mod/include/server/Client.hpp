@@ -246,6 +246,8 @@ class Client {
         static void showUIMessage(const char16_t* msg);
         static void hideUIMessage();
 
+        static const StageScene *getCurStageScene() { return sInstance ? sInstance-> mCurStageScene : nullptr; }
+
         void resetCollectedShines();
 
         void removeShine(int shineId);
@@ -405,4 +407,8 @@ class Client {
         PuppetHolder *mPuppetHolder = nullptr;
 
         PuppetInfo mDebugPuppetInfo;
+
+        int mTimeSinceLastPing = 0;
+
+        bool hasStarted = false;
 };
