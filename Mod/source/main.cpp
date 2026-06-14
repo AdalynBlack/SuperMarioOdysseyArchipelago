@@ -760,7 +760,7 @@ void onGrandShineStageChange(GameDataHolderWriter holder, ChangeStageInfo const*
     Client::sendStage(holder, stageInfo);
 }
 
-void onStageChange(GameDataFile *file,const ChangeStageInfo* stageInfo, int param2)
+void onStageChange(GameDataFile *file, const ChangeStageInfo* stageInfo, int param2)
 {
     //Client::setMessage(1, stageInfo->changeStageId.cstr());
     // Add Wooded shop moon warp
@@ -821,9 +821,9 @@ const char16_t* getShopItemMessage(al::IUseMessageSystem const* messageSystem, c
     }
     // Default to base game text if no ap text exists
     return al::getSystemMessageString(messageSystem, fileName, key);
-    
 }
 
+// Returns false if the item should be purchasable, true if the item should be greyed out
 bool isBuyItems(ShopItem::ItemInfo* itemInfo) {
     // Add a collected outfits, gifts, stickers based implementation similar to shinechecks
     
@@ -1077,7 +1077,6 @@ bool hakoniwaSequenceHook(HakoniwaSequence* sequence) {
     }
 
     return isFirstStep;
-
 }
 
 void seadPrintHook(const char *fmt, ...)
