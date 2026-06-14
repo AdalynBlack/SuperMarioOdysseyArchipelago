@@ -446,6 +446,20 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
                     gTextWriter->printf("Is Debug Puppet Tagged: %s\n", BTOC(debugInfo->isIt));
 
                 }
+
+                BossSaveData *bossSaveData = curSequence->mGameDataHolder.mData->mGameDataFile->mBossSaveData;
+                gTextWriter->printf("lv1[0]: %d\n", bossSaveData->mIsAlreadyDeadGKLv1[0]);
+                gTextWriter->printf("lv1[1]: %d\n", bossSaveData->mIsAlreadyDeadGKLv1[1]);
+                gTextWriter->printf("lv1[2]: %d\n", bossSaveData->mIsAlreadyDeadGKLv1[2]);
+                gTextWriter->printf("lv1[3]: %d\n", bossSaveData->mIsAlreadyDeadGKLv1[3]);
+                gTextWriter->printf("lv2[0]: %d\n", bossSaveData->mIsAlreadyDeadGKLv2[0]);
+                gTextWriter->printf("lv2[1]: %d\n", bossSaveData->mIsAlreadyDeadGKLv2[1]);
+                gTextWriter->printf("lv2[2]: %d\n", bossSaveData->mIsAlreadyDeadGKLv2[2]);
+                gTextWriter->printf("lv2[3]: %d\n", bossSaveData->mIsAlreadyDeadGKLv2[3]);
+                gTextWriter->printf("lv3[0]: %d\n", bossSaveData->mIsAlreadyDeadGKLv3[0]);
+                gTextWriter->printf("lv3[1]: %d\n", bossSaveData->mIsAlreadyDeadGKLv3[1]);
+                gTextWriter->printf("lv3[2]: %d\n", bossSaveData->mIsAlreadyDeadGKLv3[2]);
+                gTextWriter->printf("lv3[3]: %d\n", bossSaveData->mIsAlreadyDeadGKLv3[3]);
             }
             break;
         case 2:
@@ -461,8 +475,9 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
                     al::LiveActor *curHack = hackKeeper->currentHackActor;
 
                     gTextWriter->printf("Current Hack Animation: %s\n", al::getActionName(curHack));
-                    gTextWriter->printf("Current Hack Name: %s\n",
-                                        hackKeeper->getCurrentHackName());
+
+                    const char* hackName = hackKeeper->getCurrentHackName();
+                    gTextWriter->printf("Current Hack Name: %s\n", hackName);
                     sead::Quatf captureRot = curHack->mPoseKeeper->getQuat();
                     gTextWriter->printf("Current Hack Rot: %f %f %f %f\n", captureRot.x,
                                         captureRot.y, captureRot.z, captureRot.w);
@@ -674,8 +689,7 @@ void sendItemPacket(GameDataFile thisPtr, ShopItem::ItemInfo* info, bool flag) {
     }
     
     Client::addItem(info);
-    //thisPtr.buyItem(info, flag);
-}
+ }
 
 void sendCollectPacket(GameDataHolderAccessor thisPtr, al::PlacementId* placementId)
 {
