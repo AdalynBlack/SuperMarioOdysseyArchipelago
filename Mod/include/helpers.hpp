@@ -216,7 +216,7 @@ __attribute__((used)) static const char* captureListNames[] = {
     "RockForest", // Boulder
     "FukuwaraiFacePartsKuribo", // Gooma Picture Match Piece
     "Imomu", // Tropical Wiggler
-    "GuidePost", // Pole
+    "Guidepost", // Pole
     "Manhole",
     "Car", // Taxi
     "Radicon", // RC Car
