@@ -20,8 +20,8 @@ Client::Client() {
 
     mHeap = sead::ExpHeap::create(0x50000, "ClientHeap", sead::HeapMgr::instance()->getCurrentHeap(), 8, sead::Heap::cHeapDirection_Forward, false);
 
-    sead::ScopedCurrentHeapSetter heapSetter(
-        mHeap);  // every new call after this will use ClientHeap instead of SequenceHeap
+    sead::ScopedCurrentHeapSetter heapSetter(mHeap);
+    // every new call after this will use ClientHeap instead of SequenceHeap
 
     mReadThread = new al::AsyncFunctorThread("ClientReadThread", al::FunctorV0M<Client*, ClientThreadFunc>(this, &Client::readFunc), 0, 0x1000, {0});
 
@@ -96,6 +96,9 @@ Client::Client() {
  * @param initInfo init info used to create layouts used by client
  */
 void Client::init(al::LayoutInitInfo const &initInfo, GameDataHolderAccessor holder) {
+    if (sInstance)
+        if (sInstance->hasStarted)
+            return;
 
     mConnectStatus = new (mHeap) al::SimpleLayoutAppearWaitEnd("", "SaveMessage", initInfo, 0, false);
     al::setPaneString(mConnectStatus, "TxtSave", u"Connecting to Server.", 0);
@@ -110,6 +113,7 @@ void Client::init(al::LayoutInitInfo const &initInfo, GameDataHolderAccessor hol
     startThread();
 
     Logger::log("Heap Free Size: %f/%f\n", mHeap->getFreeSize() * 0.001f, mHeap->getSize() * 0.001f);
+    sInstance->hasStarted = true;
 }
 
 /**
@@ -172,6 +176,8 @@ bool Client::startConnection() {
     if (mIsConnectionActive) {
 
         Logger::log("Succesful Connection. Waiting to receive init packet.\n");
+        if (sInstance)
+            sInstance->appendMessage("\x1b[33mConnected to server, waiting for init.\x1b[0m");
 
         bool waitingForInitPacket = true;
         // wait for client init packet
@@ -198,10 +204,11 @@ bool Client::startConnection() {
                 Logger::log("Receive failed! Stopping Connection.\n");
                 mIsConnectionActive = false;
                 waitingForInitPacket = false;
+
+                if (sInstance)
+                    sInstance->appendMessage("\x1b[31mReceive failed! Stopping Connection.\x1b[0m");
             }
         }
-
-
     }
 
     return mIsConnectionActive;
@@ -212,7 +219,6 @@ bool Client::startConnection() {
  * @returns whether or not a new IP has been defined and needs to be saved.
  */
 bool Client::openKeyboardIP() {
-
     if (!sInstance) {
         Logger::log("Static Instance is null!\n");
         return false;
@@ -319,7 +325,6 @@ void Client::hideUIMessage() {
  * 
  */
 void Client::readFunc() {
-
     if (waitForGameInit) {
         nn::os::YieldThread(); // sleep the thread for the first thing we do so that game init can finish
         nn::os::SleepThread(nn::TimeSpan::FromSeconds(2));
@@ -331,8 +336,8 @@ void Client::readFunc() {
     al::startAction(mConnectStatus, "Loop", "Loop");
 
     if (!startConnection()) {
-
         Logger::log("Failed to Connect to Server.\n");
+        sInstance->appendMessage("\x1b[31mFailed to Connect to Server\x1b[0m");
 
         nn::os::SleepThread(nn::TimeSpan::FromNanoSeconds(250000000)); // sleep active thread for 0.25 seconds
 
@@ -350,7 +355,6 @@ void Client::readFunc() {
         Packet *curPacket = mSocket->tryGetPacket();  // will block until a packet has been received, or socket disconnected
 
         if (curPacket) {
-
             switch (curPacket->mType)
             {
             case PacketType::PLAYERINF:
@@ -438,33 +442,32 @@ void Client::readFunc() {
                 maxPuppets = initPacket->maxPlayers - 1;
                 break;
             }
-			case PacketType::UDPINIT: {
-				UdpInit* initPacket = (UdpInit*)curPacket;
-				Logger::log("Received udp init packet from server\n");
-				
-				sInstance->mSocket->setPeerUdpPort(initPacket->port);
-				sendUdpHolePunch();
-				sendUdpInit();
-				
-				break;
-			}
-			case PacketType::HOLEPUNCH: 
-				sendUdpHolePunch();
-				break;
+            case PacketType::UDPINIT: {
+                UdpInit* initPacket = (UdpInit*)curPacket;
+                Logger::log("Received udp init packet from server\n");
+                
+                sInstance->mSocket->setPeerUdpPort(initPacket->port);
+                sendUdpHolePunch();
+                sendUdpInit();
+                
+                break;
+            }
+            case PacketType::HOLEPUNCH: 
+                sendUdpHolePunch();
+                break;
             default:
                 Logger::log("Discarding Unknown Packet Type.\n");
+                if (sInstance)
+                    sInstance->appendMessage("\x1b[31mDiscarding Unknown Packet Type.\x1b[0m");
                 break;
             }
 
             mHeap->free(curPacket);
 
-        }else { // if false, socket has errored or disconnected, so restart the connection
+        } else { // if false, socket has errored or disconnected, so restart the connection
             Logger::log("Client Socket Encountered an Error, restarting connection! Errno: 0x%x\n", mSocket->socket_errno);
         }
-
     }
-
-    Logger::log("Client Read Thread ending.\n");
 }
 
 /**
@@ -541,13 +544,14 @@ void Client::sendPlayerInfPacket(const PlayerActorBase *playerBase, bool isYukim
         packet->subActName = PlayerAnims::Type::Unknown;
     }
     
-    if(sInstance->lastPlayerInfPacket != *packet) {
+    if(sInstance->lastPlayerInfPacket != *packet || sInstance->mTimeSinceLastPing <= 0) {
+        sInstance->mTimeSinceLastPing = 120;
         sInstance->lastPlayerInfPacket = *packet; // deref packet and store in client memory
         sInstance->mSocket->queuePacket(packet);
     } else {
         sInstance->mHeap->free(packet); // free packet if we're not using it
+        sInstance->mTimeSinceLastPing -= 1;
     }
-
 }
 
 /**
@@ -658,6 +662,8 @@ void Client::sendGameInfPacket(GameDataHolderAccessor holder) {
     if (*packet != sInstance->emptyGameInfPacket) {
         sInstance->lastGameInfPacket = *packet;
         sInstance->mSocket->queuePacket(packet);
+    } else {
+        sInstance->mHeap->free(packet); // free packet if we're not using it
     }
 }
 
@@ -1107,7 +1113,7 @@ void Client::sendUdpInit() {
     UdpInit *packet = new UdpInit();
 	
     packet->mUserID = sInstance->mUserID;
-	packet->port = sInstance->mSocket->getLocalUdpPort();
+    packet->port = sInstance->mSocket->getLocalUdpPort();
 	
     sInstance->mSocket->queuePacket(packet);
 }
@@ -1465,7 +1471,6 @@ void Client::receiveCheck(Check* packet)
         infoPtr = &info;
         accessor.mData->mGameDataFile->buyItem(infoPtr, false);
         if (getCheckIndex() < packet->index) {
-            GameDataFunction::wearCostume(accessor, info.mName);
             updateIndex = true;
         }
         break;
@@ -1475,7 +1480,6 @@ void Client::receiveCheck(Check* packet)
         infoPtr = &info;
         accessor.mData->mGameDataFile->buyItem(infoPtr, false);
         if (getCheckIndex() < packet->index) {
-            GameDataFunction::wearCap(accessor, info.mName);
             updateIndex = true;
         }
         break;
@@ -1706,7 +1710,7 @@ void Client::addOutfit(const ShopItem::ItemInfo *info)
 
     int index = getIndexCostumeList(info->mName) + 44 * static_cast<int>(info->mType);
 
-    int outfits = sInstance->collectedOutfits[index / 8];
+    u8 outfits = sInstance->collectedOutfits[index / 8];
 
     int curIndex = (index / 8) * 8;
     int i = 1;

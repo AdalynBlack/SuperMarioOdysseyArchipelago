@@ -53,7 +53,7 @@ static int messageShiftTimer = 0;
 
 void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool isYukimaru) {
     GameDataHolderAccessor holder = stageScene->mHolder;
-    if (pInfSendTimer >= 3) {
+    if (pInfSendTimer >= 5) {
 
         Client::sendPlayerInfPacket(playerBase, isYukimaru);
 

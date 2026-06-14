@@ -20,7 +20,7 @@ SocketClient::SocketClient(const char* name, sead::Heap* heap, Client* client) :
 #if EMU
     this->pollTime = 0;
 #else
-    this->pollTime = -1;
+    this->pollTime = 10;
 #endif
 
     mRecvThread = new al::AsyncFunctorThread("SocketRecvThread", al::FunctorV0M<SocketClient*, SocketThreadFunc>(this, &SocketClient::recvFunc), 0, 0x1000, {0});
@@ -75,9 +75,14 @@ nn::Result SocketClient::init(const char* ip, u16 port) {
     serverAddress.port = nn::socket::InetHtons(this->port);
     serverAddress.family = 2;
 
-    int sockOptValue = true;
+    int tcp_nodelay = true;
 
-    nn::socket::SetSockOpt(this->socket_log_socket, 6, TCP_NODELAY, &sockOptValue, sizeof(sockOptValue));
+    struct timeval rcvtimeo;
+    rcvtimeo.tv_sec = 5;
+    rcvtimeo.tv_usec = 0;
+
+    nn::socket::SetSockOpt(this->socket_log_socket, 6, TCP_NODELAY, &tcp_nodelay, sizeof(tcp_nodelay));
+    nn::socket::SetSockOpt(this->socket_log_socket, SOL_SOCKET, SO_RCVTIMEO, &rcvtimeo, sizeof(rcvtimeo));
 
     nn::Result result;
     
@@ -125,7 +130,7 @@ nn::Result SocketClient::init(const char* ip, u16 port) {
 
     // on a reconnect, resend some maybe missing packets
     if (initPacket.conType == ConnectionTypes::RECONNECT) {
-      client->resendInitPackets();
+        client->resendInitPackets();
     } else {
         // empty TagInf
         TagInf tagInf;
@@ -541,7 +546,7 @@ void SocketClient::recvFunc() {
 }
 
 bool SocketClient::queuePacket(Packet* packet) {
-    if (socket_log_state == SOCKET_LOG_CONNECTED && mPacketQueueOpen) {
+    if (socket_log_state == SOCKET_LOG_CONNECTED && mPacketQueueOpen && !mSendQueue.isFull()) {
         mSendQueue.push((s64)packet,
                         sead::MessageQueue::BlockType::NonBlocking);  // as this is non-blocking, it
                                                                       // will always return true.
