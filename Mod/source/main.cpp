@@ -48,7 +48,6 @@
 static int pInfSendTimer = 0;
 static int gameInfSendTimer = 0;
 static int checksSyncTimer = 0;
-static bool isRecordCapture = false;
 static int updateCounterTimer = 0;
 static int messageShiftTimer = 0;
 
@@ -67,7 +66,7 @@ void updatePlayerInfo(GameDataHolderAccessor holder, PlayerActorBase* playerBase
         if (Client::getCapturesFlag()) {
             al::LiveActor* curHack = playerBase->getPlayerHackKeeper()->currentHackActor;
             const char* hackName = playerBase->getPlayerHackKeeper()->getCurrentHackName();
-            if (hackName != nullptr && !Client::hasCapture(hackName) && isRecordCapture) {
+            if (hackName != nullptr && !Client::hasCapture(hackName)) {
                 if (!(al::isEqualString(hackName, "ElectricWire") && Client::getScenario(0) < 2
                     && GameDataFunction::getCurrentWorldId(holder) == 0)) {
                     //Client::setMessage(1, hackNamehackName);
@@ -86,7 +85,6 @@ void updatePlayerInfo(GameDataHolderAccessor holder, PlayerActorBase* playerBase
                         } else {
                             playerBase->getPlayerHackKeeper()->forceKillHack();
                         }
-                        isRecordCapture = false;
                     }
                 }
             }
@@ -799,7 +797,6 @@ void onAddHack(GameDataHolderWriter writer,const char* hackName)
     if (Client::getCapturesFlag()) {
         //Client::setMessage(2, hackName);
         Client::sendCheckPacket(getIndexCaptureList(hackName), 5);
-        isRecordCapture = true;
     } else {
         GameDataFunction::addHackDictionary(writer, hackName);
     }
