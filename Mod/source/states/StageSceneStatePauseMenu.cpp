@@ -15,10 +15,15 @@ void StageSceneStatePauseMenu::exeServerConfig(void) {
             kill();
         } else {
             mSelectParts->appearWait();
+
             mFooterParts->tryChangeTextFade(
                 al::getSystemMessageString(mMenuGuide, "Footer", "MenuMessage_Footer"));
 
-            al::setNerve(this, &nrvStageSceneStatePauseMenuWait);
+            if (al::isNerve(this, &nrvStageSceneStatePauseMenuServerConfig)) {
+                al::setNerve(this, &nrvStageSceneStatePauseMenuStartHelp);
+            } else {
+                al::setNerve(this, &nrvStageSceneStatePauseMenuWait);
+            }
         }
     }
 }
