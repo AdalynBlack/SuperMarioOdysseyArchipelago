@@ -56,9 +56,7 @@ Client::Client() {
 
     mUsername = playerName.name;
 
-    apChatLine1 = "";
-    apChatLine2 = "";
-    apChatLine3 = "";
+    apChatLineCount = 0;
     
     worldScenarios.fill(1);
     worldPayCounts.fill(-1);
@@ -1988,10 +1986,10 @@ bool Client::hasCapture(const char* capture) {
     if (index == -1)
     {
         sead::FixedSafeString<40> str;
-        str = "";
+        str = "\x1b[33m";
         str.append(capture);
-        str.append(" not in captures list.");
-        setMessage(1, str.cstr());
+        str.append(" not in captures list.\x1b[0m");
+        appendMessage(str.cstr());
         return false;
     }
 
@@ -2062,10 +2060,10 @@ bool Client::hasCaptureCheck(const char* capture) {
     int index = getIndexCaptureList(capture);
     if (index == -1) {
         sead::FixedSafeString<40> str;
-        str = "";
+        str = "\x1b[33m";
         str.append(capture);
-        str.append(" not in captures list.");
-        setMessage(1, str.cstr());
+        str.append(" not in captures list.\x1b[0m");
+        appendMessage(str.cstr());
         return false;
     }
 
@@ -2101,25 +2099,38 @@ void Client::startShineChipCount() {
     sInstance->mCurStageScene->mSceneLayout->updateCounterParts();  // updates shine chip layout to (maybe) prevent softlocks
 }
 
-
-void Client::setMessage(int num, const char* msg)
+void Client::appendMessage(const char* msg)
 {
     if (!sInstance) {
         Logger::log("Static Instance is Null!\n");
         return;
     }
 
-    switch (num) {
-    case 1: 
-        sInstance->apChatLine1 = msg;
-        break;
-    case 2: 
-        sInstance->apChatLine2 = msg;
-        break;
-    case 3: 
-        sInstance->apChatLine3 = msg;
-        break;
+    if (strlen(msg) <= 0)
+    {
+        return;
     }
+
+    if (sInstance->apChatLineCount >= 5)
+    {
+        shiftMessages();
+    }
+
+    sInstance->apChatLines[sInstance->apChatLineCount] = msg;
+    sInstance->apChatLineCount++;
+}
+
+void Client::shiftMessages()
+{
+    if (!sInstance) {
+        Logger::log("Static Instance is Null!\n");
+        return;
+    }
+
+    for (int i = 1; i < sInstance->apChatLineCount; i++)
+        sInstance->apChatLines[i - 1] = sInstance->apChatLines[i];
+
+    sInstance->apChatLineCount--;
 }
 
 void Client::addApInfo(ApInfo* packet)
@@ -2976,7 +2987,7 @@ const char* Client::getShineReplacementText()
 
     if (curReplaceText.shineItemNameIndex == 255)
     {
-        setMessage(2, "Invalid shine item name index");
+        appendMessage("\x1b[31mInvalid shine item name index\x1b[0m");
         return sInstance->recentShine->curShineInfo->mShineLabel.cstr();
     } else {
         return sInstance->shineItemNames[curReplaceText.shineItemNameIndex].cstr();
@@ -3360,9 +3371,12 @@ void Client::updateChatMessages(ArchipelagoChatMessage* packet)
         return;
     }
 
-    sInstance->apChatLine1 = packet->message1;
-    sInstance->apChatLine2 = packet->message2;
-    sInstance->apChatLine3 = packet->message3;
+    if (strlen(packet->message1) != 0)
+        sInstance->appendMessage(packet->message1);
+    else if (strlen(packet->message2) != 0)
+        sInstance->appendMessage(packet->message2);
+    else
+        sInstance->appendMessage(packet->message3);
 }
 
 void Client::updateSlotData(SlotData* packet) {

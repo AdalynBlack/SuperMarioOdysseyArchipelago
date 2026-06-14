@@ -190,8 +190,9 @@ class Client {
         static void setCheckIndex(int index);
         static int getCheckIndex() { return sInstance ? sInstance->checkIndex : 0; };
 
-        static void setMessage(int num, const char* msg);
-        
+        static void appendMessage(const char *message);
+        static void shiftMessages();
+
         static Keyboard* getKeyboard();
 
         static const char* getCurrentIP();
@@ -200,9 +201,9 @@ class Client {
         
         static sead::FixedSafeString<0x20> getUsername() { return sInstance ? sInstance->mUsername : sead::FixedSafeString<0x20>::cEmptyString;}
 
-        static sead::FixedSafeString<0x4B> getAPChatMessage1() { return sInstance ? sInstance->apChatLine1 : sead::FixedSafeString<0x20>::cEmptyString;}
-        static sead::FixedSafeString<0x4B> getAPChatMessage2() { return sInstance ? sInstance->apChatLine2 : sead::FixedSafeString<0x20>::cEmptyString;}
-        static sead::FixedSafeString<0x4B> getAPChatMessage3() { return sInstance ? sInstance->apChatLine3 : sead::FixedSafeString<0x20>::cEmptyString;}
+        static int getQueueLength() { return sInstance->apChatLineCount; }
+        static sead::FixedSafeString<0x4B> getAPChatMessage(int index) { return sInstance && sInstance->apChatLineCount > index ? sInstance->apChatLines[index] : sead::FixedSafeString<0x20>::cEmptyString;}
+
         static void setRecentShine(Shine* curShine);
         static Shine* getRecentShine() { return sInstance ? sInstance->recentShine : nullptr; }
 
@@ -299,9 +300,8 @@ class Client {
 
         int lastCollectedShine = -1;
 
-        sead::FixedSafeString<0x4B> apChatLine1;
-        sead::FixedSafeString<0x4B> apChatLine2;
-        sead::FixedSafeString<0x4B> apChatLine3;
+        int apChatLineCount = 0;
+        sead::FixedSafeString<0x4B> apChatLines[6];
 
         ushort clashCount = 10;
         ushort raidCount = 3;

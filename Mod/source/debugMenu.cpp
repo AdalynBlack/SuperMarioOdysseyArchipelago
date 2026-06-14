@@ -46,8 +46,8 @@ void drawBackground(agl::DrawContext *context) {
 }
 
 void drawApChatBackground(agl::DrawContext* context, float rows) {
-    sead::Vector3<float> p1(-1, -.50 - 0.05 * rows, 0);    // top left
-    sead::Vector3<float> p2(-.2, -.50 - 0.05 * rows, 0);  // top right
+    sead::Vector3<float> p1(-1, -.7 + 0.05 * rows, 0);    // top left
+    sead::Vector3<float> p2(-.2, -.7 + 0.05 * rows, 0);  // top right
     sead::Vector3<float> p3(-1, -.7, 0);   // bottom left
     sead::Vector3<float> p4(-.2, -.7, 0);  // bottom right
     sead::Color4f c(.1, .1, .1, .7);

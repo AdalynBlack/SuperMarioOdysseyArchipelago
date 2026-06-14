@@ -208,6 +208,68 @@ static int pageIndex = 0;
 
 static const int maxPages = 3;
 
+void printf_colored(char const *message)
+{
+    int length = strlen(message);
+    for (int i = 0; i < length; i++)
+    {
+        // Ansi color code starts here
+        if(message[i] == '\x1b') {
+            // Skip to the number. We don't care about the rest
+            i += 2;
+
+            // Ansi code was incomplete
+            if (i >= length)
+                return;
+
+            int color_code = atoi(message + i);
+
+            // Scan until we find the termination character
+            do {
+                i++;
+                // Ansi code was incomplete
+                if (i >= length)
+                    return;
+            } while (message[i] != 'm');
+            // Ansi code was incomplete
+            if (i >= length)
+                return;
+
+            switch (color_code)
+            {
+                // No BG colors, bold, or underline support. Just ignore them
+                case 0: // Reset
+                case 37: // White
+                    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, .8f);
+                    break;
+                case 30: // Black
+                    gTextWriter->mColor = sead::Color4f(0.f, 0.f, 0.f, .8f);
+                    break;
+                case 31: // Red
+                    gTextWriter->mColor = sead::Color4f(1.f, 0.f, 0.f, .8f);
+                    break;
+                case 32: // Green
+                    gTextWriter->mColor = sead::Color4f(0.f, 1.f, 0.5f, .8f);
+                    break;
+                case 33: // Yellow
+                    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 0.467f, .8f);
+                    break;
+                case 34: // Blue
+                    gTextWriter->mColor = sead::Color4f(0.392f, 0.584f, 0.929f, .8f);
+                    break;
+                case 35: // Magenta
+                    gTextWriter->mColor = sead::Color4f(1.f, 0.f, 1.f, .8f);
+                    break;
+                case 36: // Cyan
+                    gTextWriter->mColor = sead::Color4f(0.f, 1.f, 1.f, .8f);
+                    break;
+            }
+        } else {
+            gTextWriter->printf("%c", message[i]);
+        }
+    }
+}
+
 void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead::DrawContext *drawContext) {
 
     // sead::FrameBuffer *frameBuffer;
@@ -223,31 +285,41 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
 
     gTextWriter->mViewport = viewport;
 
-    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, 0.8f);
-
     al::Scene* curScene = curSequence->curScene;
 
-    if (curScene && isInGame &&
-        !(Client::getAPChatMessage1() == Client::getAPChatMessage2() &&
-          Client::getAPChatMessage2() == Client::getAPChatMessage3())) {
-        if (Client::getAPChatMessage1() == Client::getAPChatMessage2())
-            drawApChatBackground((agl::DrawContext*)drawContext, 3.f);
-        else if (Client::getAPChatMessage1().isEmpty())
-            drawApChatBackground((agl::DrawContext*)drawContext, 2.f);
-        else
-            drawApChatBackground((agl::DrawContext*)drawContext, 1.f);
+    if (Client::getQueueLength() == 0)
+    {
+        messageShiftTimer = 0;
+    }
+
+    if (messageShiftTimer > (10 - Client::getQueueLength()) * 150)
+    {
+        messageShiftTimer = 0;
+        Client::shiftMessages();
+    }
+
+    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, 0.8f);
+
+    if (curScene && isInGame && (Client::getQueueLength() > 0) && !debugMode) {
+        drawApChatBackground((agl::DrawContext*)drawContext, Client::getQueueLength() * 1.f);
 
         gTextWriter->beginDraw();
-        gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, (dispHeight * 7 / 10) + 60.f));
         gTextWriter->setScaleFromFontHeight(15.f);
 
-        gTextWriter->printf("%s\n", Client::getAPChatMessage1().cstr());
-        gTextWriter->printf("%s\n", Client::getAPChatMessage2().cstr());
-        gTextWriter->printf("%s\n", Client::getAPChatMessage3().cstr());
+        //rs::showCapMessage()
+
+        int height_offset = (6 - Client::getQueueLength());
+        for (int i = 0; i < Client::getQueueLength(); i++)
+        {
+            gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, (dispHeight * 7 / 10) + 18.f * (i + height_offset)));
+            printf_colored(Client::getAPChatMessage(i).cstr());
+        }
+
+        messageShiftTimer++;
     }
 
     if(!debugMode) {
-        al::executeDraw(curSequence->mLytKit, "２Ｄバック（メイン画面）");
+        al::executeDraw(curSequence->mLytKit, "２Ｄオーバー（メイン画面）");
         return;
     }
 
@@ -418,7 +490,8 @@ void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead:
 
     gTextWriter->endDraw();
 
-    al::executeDraw(curSequence->mLytKit, "２Ｄバック（メイン画面）");
+    // 2D Background (Main Surface)
+    al::executeDraw(curSequence->mLytKit, "２Ｄオーバー（メイン画面）");
 
 }
 
