@@ -73,8 +73,8 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
                         //Client::setMessage(1, hackNamehackName);
                         if (!playerBase->getPlayerHackKeeper()->isActiveHackStartDemo()) {
                             bool tryEscape = false;
-                            int nonKillCaptures[7] = {10, 13, 24, 25, 28, 29, 37};
-                            for (int i = 0; i < 7; i++) {
+                            int nonKillCaptures[39] = {0, 1, 2, 3, 4, 5, 7, 9, 10, 11, 13, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 43, 44, 46, 48, 49, 51};
+                            for (int i = 0; i < 39; i++) {
                                 tryEscape =
                                     al::isEqualString(captureListNames[nonKillCaptures[i]], hackName);
                                 if (tryEscape) {
