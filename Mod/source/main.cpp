@@ -51,8 +51,8 @@ static int checksSyncTimer = 0;
 static int updateCounterTimer = 0;
 static int messageShiftTimer = 0;
 
-void updatePlayerInfo(GameDataHolderAccessor holder, PlayerActorBase* playerBase, bool isYukimaru) {
-    
+void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool isYukimaru) {
+    GameDataHolderAccessor holder = stageScene->mHolder;
     if (pInfSendTimer >= 3) {
 
         Client::sendPlayerInfPacket(playerBase, isYukimaru);
@@ -63,32 +63,36 @@ void updatePlayerInfo(GameDataHolderAccessor holder, PlayerActorBase* playerBase
             Client::sendCaptureInfPacket((PlayerActorHakoniwa*)playerBase);
         }
         
-        if (Client::getCapturesFlag()) {
-            al::LiveActor* curHack = playerBase->getPlayerHackKeeper()->currentHackActor;
-            const char* hackName = playerBase->getPlayerHackKeeper()->getCurrentHackName();
-            if (hackName != nullptr && !Client::hasCapture(hackName)) {
-                if (!(al::isEqualString(hackName, "ElectricWire") && Client::getScenario(0) < 2
-                    && GameDataFunction::getCurrentWorldId(holder) == 0)) {
-                    //Client::setMessage(1, hackNamehackName);
-                    if (!playerBase->getPlayerHackKeeper()->isActiveHackStartDemo()) {
-                        bool tryEscape = false;
-                        int nonKillCaptures[7] = {10, 13, 24, 25, 28, 29, 37};
-                        for (int i = 0; i < 7; i++) {
-                            tryEscape =
-                                al::isEqualString(captureListNames[nonKillCaptures[i]], hackName);
-                            if (tryEscape) {
-                                break;
+        if (Client::getCapturesFlag() && !isYukimaru) {
+            PlayerHackKeeper* hackKeeper = playerBase->getPlayerHackKeeper();
+            if(hackKeeper) {
+                const char* hackName = hackKeeper->getCurrentHackName();
+                if (hackName != nullptr && !Client::hasCapture(hackName)) {
+                    if (!(al::isEqualString(hackName, "ElectricWire") && Client::getScenario(0) < 2
+                        && GameDataFunction::getCurrentWorldId(holder) == 0)) {
+                        //Client::setMessage(1, hackNamehackName);
+                        if (!playerBase->getPlayerHackKeeper()->isActiveHackStartDemo()) {
+                            bool tryEscape = false;
+                            int nonKillCaptures[7] = {10, 13, 24, 25, 28, 29, 37};
+                            for (int i = 0; i < 7; i++) {
+                                tryEscape =
+                                    al::isEqualString(captureListNames[nonKillCaptures[i]], hackName);
+                                if (tryEscape) {
+                                    break;
+                                }
                             }
-                        }
-                        if (tryEscape) {
-                            playerBase->getPlayerHackKeeper()->tryEscapeHack();
-                        } else {
-                            playerBase->getPlayerHackKeeper()->forceKillHack();
+                            if (tryEscape) {
+                                playerBase->getPlayerHackKeeper()->cancelHack();
+                            } else {
+                                playerBase->getPlayerHackKeeper()->forceKillHack();
+                            }
                         }
                     }
                 }
             }
         }
+
+        holder.mData->mGameDataFile->mBossSaveData->mIsAlreadyDeadGKLv1[0] = Client::getScenario(0) > 1;
 
         if (!(al::isEqualString(GameDataFunction::tryGetCurrentMainStageName(holder),
                               "CapWorldHomeStage") &&
@@ -163,8 +167,26 @@ void updatePlayerInfo(GameDataHolderAccessor holder, PlayerActorBase* playerBase
             playerBase->startDemoPuppetable();
             al::setVelocityZero(playerBase);
             rs::faceToCamera(playerBase);
-            ((PlayerActorHakoniwa*)playerBase)->mPlayerAnimator->endSubAnim();
-            ((PlayerActorHakoniwa*)playerBase)->mPlayerAnimator->startAnimDead();
+
+            if (!isYukimaru) {
+                ((PlayerActorHakoniwa*)playerBase)->mPlayerAnimator->endSubAnim();
+                ((PlayerActorHakoniwa*)playerBase)->mPlayerAnimator->startAnimDead();
+            } else {
+                // The player can't be killed in the race, but we can trigger an instant loss instead
+                GameDataFunction::loseRace(holder);
+                if (stageScene &&
+                        stageScene->mStageSceneStateYukimaruRace &&
+                        stageScene->mStageSceneStateYukimaruRace->mRaceWatcher) {
+                    ChangeStageInfo* loseStageInfo = stageScene->mStageSceneStateYukimaruRace->mRaceWatcher->mLoseStageInfo;
+
+                    if (loseStageInfo)
+                        GameDataFunction::tryChangeNextStage(holder, loseStageInfo);
+                    else
+                        GameDataFunction::returnPrevStage(holder);
+                    stageScene->kill();
+                }
+            }
+
             Client::setApDeath(false);
         }
 
@@ -962,7 +984,7 @@ bool hakoniwaSequenceHook(HakoniwaSequence* sequence) {
 
     Client::update();
 
-    updatePlayerInfo(stageScene->mHolder, playerBase, isYukimaru);
+    updatePlayerInfo(stageScene, playerBase, isYukimaru);
 
     static bool isDisableMusic = false;
 
