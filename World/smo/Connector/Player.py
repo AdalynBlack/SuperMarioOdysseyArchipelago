@@ -49,7 +49,7 @@ class SMOPlayer:
         "Darker": 1
     }
     goal : int
-    current_home_stage : str = "Cap"
+    current_home_stage : str = ""
 
     def __init__(self):
         self.reset_moons()
@@ -104,6 +104,9 @@ class SMOPlayer:
             next moon id to send to SMO
         """
         item_name : str = id_to_name[item]
+
+        if item_name == "Beat the Game":
+            return -1
 
 
         if item_name in self.MAX_MOONS:

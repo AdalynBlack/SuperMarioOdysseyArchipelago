@@ -1,7 +1,7 @@
 import random
 import os
 from math import floor
-from typing import Mapping, Any
+from typing import Mapping, Any, TextIO
 from .Items import item_table, SMOItem, filler_item_table, outfits, shop_items, multi_moons, \
     moon_item_table, moon_types, story_moons, world_list, stickers, souvenirs, capture_items, \
     location_hint_list
@@ -19,24 +19,11 @@ from Utils import output_path
 
 def launch_client(*args: str):
     from .Connector.Client import launch
-    print(len(args))
-    if len(args) > 0:
-        make_output(args[0])
-        launch_component(launch, name="SMOClient", args=args[1:])
-    else:
-        launch_component(launch, name="SMOClient", args=args)
+    launch_component(launch, name="SMOClient", args=args)
 
-component = Component("Super Mario Odyssey Client", component_type=component_type.CLIENT,
-                      game_name="Super Mario Odyssey", file_identifier=SuffixIdentifier(".apsmo"), func=launch_client)
+component = Component("Adi's Unofficial Super Mario Odyssey Client", component_type=component_type.CLIENT,
+                      game_name="Super Mario Odyssey", func=launch_client)
 components.append(component)
-
-# class SMOSettings(Group):
-#     class SMORomFS(UserFolderPath):
-#         """Folder location of your dumped Super Mario Odyssey RomFS."""
-#         description = "Super Mario Odyssey RomFS"
-#         copy_to = "SMO_RomFs"
-#
-#     romFS_folder: SMORomFS = SMORomFS(SMORomFS.copy_to)
 
 
 class SMOWorld(World):
@@ -59,8 +46,27 @@ class SMOWorld(World):
     # include events, but don't have to since events will be placed manually.
     item_name_to_id = {**item_table, **moon_types}
 
+    glitches_item_name = "Glitch Logic"
+
     location_name_to_id = locations_table
     # Number of Power Moons required to leave each kingdom
+    vanilla_moon_counts = {
+        "cascade": 5,
+        "sand": 16,
+        "lake": 8,
+        "wooded": 16,
+        "lost": 10,
+        "metro": 20,
+        "snow": 10,
+        "seaside": 10,
+        "luncheon": 18,
+        "ruined": 3,
+        "bowser": 8,
+        "dark": 250,
+        "darker": 500
+    }
+
+    # Randomized moon counts
     moon_counts = {
         "cascade": 5,
         "sand": 16,
@@ -75,6 +81,27 @@ class SMOWorld(World):
         "bowser": 8,
         "dark": 250,
         "darker": 500
+    }
+
+    # Order in which kingdoms are unlocked
+    kingdom_order = {
+        "cascade": 1,
+        "cap": 2,
+        "sand": 3,
+        "lake": 4,
+        "wooded": 5,
+        "cloud": 6,
+        "lost": 7,
+        "metro": 8,
+        "snow": 9,
+        "seaside": 10,
+        "luncheon": 11,
+        "ruined": 12,
+        "bowser": 13,
+        "moon": 14,
+        "mushroom": 15,
+        "dark": 16,
+        "darker": 17
     }
 
     # Number of Power Moons required to unlock post game outfits.
@@ -108,7 +135,7 @@ class SMOWorld(World):
         "wooded": 53,
         "lost": 20,
         "metro": 57,
-        "snow": 35,
+        "snow": 35 - 3, # Normally 35, but we've removed 3 moons because Bound Bowl crashes the game
         "seaside": 51,
         "luncheon": 53,
         "ruined": 6,
@@ -126,7 +153,7 @@ class SMOWorld(World):
         "cloud": 9,
         "lost": 35,
         "metro": 85,
-        "snow": 57,
+        "snow": 57 - 3 - 1 - 1 - 1, # Normally 57, but we've removed 6 moons because Bound Bowl crashes the game
         "seaside": 73,
         "luncheon": 72,
         "ruined": 12,
@@ -156,45 +183,227 @@ class SMOWorld(World):
     # Items can be grouped using their names to allow easy checking if any item
     # from that group has been collected. Group names can also be used for !hint
     item_name_groups = {
-        "Cap": ["Cap Power Moon"],
-        "Cascade": ["Cascade Power Moon","Cascade Story Moon", "Cascade Multi-Moon"],
-        "Sand": ["Sand Power Moon","Sand Story Moon", "Sand Multi-Moon"],
-        "Lake": ["Lake Power Moon", "Lake Multi-Moon"],
-        "Wooded": ["Wooded Power Moon","Wooded Story Moon", "Wooded Multi-Moon"],
-        "Cloud": ["Cloud Power Moon"],
-        "Lost": ["Lost Power Moon"],
-        "Metro": ["Metro Power Moon","Metro Story Moon", "Metro Multi-Moon"],
-        "Snow": ["Snow Power Moon","Snow Story Moon", "Snow Multi-Moon"],
-        "Seaside": ["Seaside Power Moon","Seaside Story Moon", "Seaside Multi-Moon"],
-        "Luncheon": ["Luncheon Power Moon","Luncheon Story Moon", "Luncheon Multi-Moon"],
-        "Ruined": ["Ruined Power Moon", "Ruined Multi-Moon"],
-        "Bowser": ["Bowser Power Moon","Bowser Story Moon", "Bowser Multi-Moon"],
-        "Moon": ["Moon Power Moon"],
-        "Mushroom": ["Power Star", "Mushroom Multi-Moon"],
-        "Dark": ["Dark Side Power Moon", "Dark Side Multi-Moon"],
-        "Darker": ["Darker Side Multi-Moon"]
+        "Cap Moon": ["Cap Power Moon"],
+        "Cascade Moon": ["Cascade Power Moon","Cascade Story Moon", "Cascade Multi-Moon"],
+        "Sand Moon": ["Sand Power Moon","Sand Story Moon", "Sand Multi-Moon"],
+        "Lake Moon": ["Lake Power Moon", "Lake Multi-Moon"],
+        "Wooded Moon": ["Wooded Power Moon","Wooded Story Moon", "Wooded Multi-Moon"],
+        "Cloud Moon": ["Cloud Power Moon"],
+        "Lost Moon": ["Lost Power Moon"],
+        "Metro Moon": ["Metro Power Moon","Metro Story Moon", "Metro Multi-Moon"],
+        "Snow Moon": ["Snow Power Moon","Snow Story Moon", "Snow Multi-Moon"],
+        "Seaside Moon": ["Seaside Power Moon","Seaside Story Moon", "Seaside Multi-Moon"],
+        "Luncheon Moon": ["Luncheon Power Moon","Luncheon Story Moon", "Luncheon Multi-Moon"],
+        "Ruined Moon": ["Ruined Power Moon", "Ruined Multi-Moon"],
+        "Bowser Moon": ["Bowser Power Moon","Bowser Story Moon", "Bowser Multi-Moon"],
+        "Moon Moon": ["Moon Power Moon"],
+        "Mushroom Moon": ["Power Star", "Mushroom Multi-Moon"],
+        "Dark Moon": ["Dark Side Power Moon", "Dark Side Multi-Moon"],
+        "Darker Moon": ["Darker Side Multi-Moon"]
     }
-
-    shine_items : dict[int, list[str]] = {}
-    shine_replace_data = {}
-    shine_colors : dict[int, int] = {}
-    color_list : list[int] = []
-    shop_games : list[str] = []
-    shop_players : list[str] = []
-    shop_ap_items : list[str] = []
-    shop_replace_data = {}
-    coin_values = {}
 
     # Change regionals to be dependent on the option
     def fill_slot_data(self) -> Mapping[str, Any]:
+        shine_items : dict[int, list[str]] = {}
+        shine_replace_data = {}
+        shine_colors : dict[int, int] = {}
+        color_list : list[int] = []
+        shop_games : list[str] = []
+        shop_players : list[str] = []
+        shop_ap_items : list[str] = []
+        shop_replace_data = {}
+        coin_values = {}
+
+        for player in range(1, self.multiworld.players + 1):
+            if not player in coin_values:
+                coin_values[player] = {}
+            for location in self.multiworld.get_locations(player):
+                if location.item.game == self.game and location.item.name == "Coins":
+                    rand_num = self.random.randint(0,99)
+                    if rand_num < 44:
+                        coin_amount = self.random.randint(50, 100)
+                        location.item.name = f"{str(coin_amount)} " + location.item.name
+                        coin_values[location.player][location.address] = coin_amount
+                    elif rand_num < 74:
+                        coin_amount = self.random.randint(101, 250)
+                        location.item.name = f"{str(coin_amount)} " + location.item.name
+                        coin_values[location.player][location.address] = coin_amount
+                    elif rand_num < 89:
+                        coin_amount = self.random.randint(251, 500)
+                        location.item.name = f"{str(coin_amount)} " + location.item.name
+                        coin_values[location.player][location.address] = coin_amount
+                    elif rand_num < 96:
+                        coin_amount = self.random.randint(501, 750)
+                        location.item.name = f"{str(coin_amount)} " + location.item.name
+                        coin_values[location.player][location.address] = coin_amount
+                    elif rand_num < 100:
+                        coin_amount = self.random.randint(751, 1000)
+                        location.item.name = f"{str(coin_amount)} " + location.item.name
+                        coin_values[location.player][location.address] = coin_amount
+
+        for world_id in range(len(location_hint_list)):
+            shine_replace_data[world_id] = {}
+            shine_items[world_id] = []
+
+        for location in self.multiworld.get_locations(self.player):
+            for world_id in range(len(location_hint_list)):
+                if self.location_name_to_id[location.name] in location_hint_list[world_id]:
+                    corrected_name = location.item.name.replace("_", " ")
+                    if not corrected_name in shine_items[world_id]:
+                        shine_items[world_id].append(corrected_name)
+
+        # Sort shine item lists
+        for world_id in range(len(location_hint_list)):
+            shine_items[world_id] = sorted(shine_items[world_id])
+
+        for world_id in range(len(location_hint_list)):
+            for hint_id in range(len(location_hint_list[world_id])):
+                for key in list(location_hint_list[world_id].keys()):
+                    if location_hint_list[world_id][key] == hint_id:
+                        loc_name = self.location_id_to_name[key]
+                        if loc_name in self.multiworld.regions.location_cache[self.player]:
+                            location = self.multiworld.get_location(loc_name, self.player)
+                            corrected_name = location.item.name.replace("_", " ")
+
+                            name_index : int = shine_items[world_id].index(corrected_name)
+                            shine_replace_data[world_id][hint_id] = [-1, name_index]
+                        else:
+                            shine_replace_data[world_id][hint_id] = [-1, 255]
+
+        match self.options.colors.value:
+            case self.options.colors.option_off:
+                color_list = [0, 0, 5, 7, 2, 0, 0, 1, 4, 8, 6, 0, 3, 9, -1, 9, 9, 27]
+                for location in self.get_locations():
+                    for kingdom in range(17):
+                        if location.name in full_moon_locations_list[kingdom]:
+                            shine_colors[self.location_name_to_id[location.name]] = color_list[kingdom]
+
+            case self.options.colors.option_kingdom_random:
+                colors = list(range(30))
+                for i in range(17):
+                    color_list.append(colors.pop(self.random.randint(0, len(colors) - 1)))
+                for location in self.get_locations():
+                    for kingdom in range(17):
+                        if location.name in full_moon_locations_list[kingdom]:
+                            shine_colors[self.location_name_to_id[location.name]] = color_list[kingdom]
+
+            case self.options.colors.option_item:
+                color_list = [0, 15, 5, 2, 7, 11, 14, 1, 8, 4, 6, 13, 17, 9, -1, 9, 9, 10, 12, 16, 18, 19]
+                for location in self.get_locations():
+                    for kingdom in range(17):
+                        if self.location_name_to_id[location.name] < 1168:
+                            if location.item.game == self.game:
+                                if location.item.name in capture_items:
+                                    shine_colors[self.location_name_to_id[location.name]] = color_list[18]
+                                elif location.item.name in stickers or location.item.name in souvenirs:
+                                    shine_colors[self.location_name_to_id[location.name]] = color_list[19]
+                                elif location.item.name in outfits:
+                                    shine_colors[self.location_name_to_id[location.name]] = color_list[20]
+                                elif world_list[kingdom] in location.item.name:
+                                    shine_colors[self.location_name_to_id[location.name]] = color_list[kingdom]
+                                    break
+
+                            else:
+                                shine_colors[self.location_name_to_id[location.name]] = color_list[21]
+                                break
+
+            case self.options.colors.option_classification:
+                pass
+
+            case self.options.colors.option_item_random:
+                colors = list(range(30))
+                for i in range(22):
+                    color_list.append(colors.pop(self.random.randint(0, len(colors) - 1)))
+                for location in self.get_locations():
+                    for kingdom in range(17):
+                        if self.location_name_to_id[location.name] < 1168:
+                            if location.item.game == self.game:
+                                if location.item.name in capture_items:
+                                    shine_colors[self.location_name_to_id[location.name]] = color_list[18]
+                                elif location.item.name in stickers or location.item.name in souvenirs:
+                                    shine_colors[self.location_name_to_id[location.name]] = color_list[19]
+                                elif location.item.name in outfits:
+                                    shine_colors[self.location_name_to_id[location.name]] = color_list[20]
+                                elif world_list[kingdom] in location.item.name:
+                                    shine_colors[self.location_name_to_id[location.name]] = color_list[
+                                        kingdom]
+                                    break
+
+                            else:
+                                shine_colors[self.location_name_to_id[location.name]] = color_list[21]
+                                break
+
+            case self.options.colors.option_classification_random:
+                pass
+
+            case self.options.colors.option_chaos:
+                for location in self.get_locations():
+                    if self.location_name_to_id[location.name] < 1168:
+                        shine_colors[self.location_name_to_id[location.name]] = self.random.randint(0,30)
+
+        shop_replace_data["caps"] = {}
+        shop_replace_data["clothes"] = {}
+        shop_replace_data["stickers"] = {}
+        shop_replace_data["souvenirs"] = {}
+        shop_replace_data["moons"] = {}
+        shop_games = []
+        shop_players = []
+        shop_ap_items = []
+
+        for location in self.multiworld.get_locations(self.player):
+            if location.name in shop_items or location.name in outfits or "Shopping" in location.name:
+                if not self.multiworld.get_player_name(location.item.player) in shop_players:
+                    shop_players.append(self.multiworld.get_player_name(location.item.player))
+
+                corrected_name = location.item.name.replace("_", " ")
+                if not corrected_name in shop_ap_items:
+                    shop_ap_items.append(corrected_name)
+
+                corrected_game = location.item.game.replace("_", " ")
+                if not corrected_game in shop_games:
+                    shop_games.append(corrected_game)
+        shop_games = sorted(shop_games)
+        shop_players = sorted(shop_players)
+        shop_ap_items = sorted(shop_ap_items)
+        for location in self.multiworld.get_locations(self.player):
+            if self.location_name_to_id[location.name] < 2582 :
+                if "Shopping" in location.name:
+                    shop_replace_data["moons"][self.location_name_to_id[location.name]] = [shop_games.index(location.item.game.replace("_", " ")),
+                    shop_players.index(self.multiworld.get_player_name(location.item.player)),
+                    shop_ap_items.index(location.item.name.replace("_", " ")), location.item.classification.value]
+                else:
+                    if 2539 > self.location_name_to_id[location.name] > 2500 or 2582 > self.location_name_to_id[location.name] > 2576:
+                        shop_replace_data["caps"][self.location_name_to_id[location.name]] = [shop_games.index(location.item.game.replace("_", " ")),
+                        shop_players.index(self.multiworld.get_player_name(location.item.player)),
+                        shop_ap_items.index( location.item.name.replace("_", " ")), location.item.classification.value]
+                    if self.location_name_to_id[location.name] > 2538:
+                        shop_replace_data["clothes"][self.location_name_to_id[location.name]] = [shop_games.index(location.item.game.replace("_", " ")),
+                        shop_players.index(self.multiworld.get_player_name(location.item.player)),
+                        shop_ap_items.index(location.item.name.replace("_", " ")), location.item.classification.value]
+            if location.name in stickers:
+                shop_replace_data["stickers"][self.location_name_to_id[location.name]] = [shop_games.index(location.item.game.replace("_", " ")),
+                shop_players.index(self.multiworld.get_player_name(location.item.player)),
+                shop_ap_items.index(location.item.name.replace("_", " ")), location.item.classification.value]
+            if location.name in souvenirs:
+                shop_replace_data["souvenirs"][self.location_name_to_id[location.name]] = [shop_games.index(location.item.game.replace("_", " ")),
+                shop_players.index(self.multiworld.get_player_name(location.item.player)),
+                shop_ap_items.index(location.item.name.replace("_", " ")), location.item.classification.value]
+
         return {**(self.options.as_dict("goal", "colors", "capture_sanity", "death_link")), "counts" : self.moon_counts,
-                "shine_items" : self.shine_items, "shine_replace_data" : self.shine_replace_data, "shine_colors" : self.shine_colors,
-                "shop_games" : self.shop_games, "shop_players" : self.shop_players, "shop_ap_items" : self.shop_ap_items,
-                "shop_replace_data" : self.shop_replace_data, "coin_values" : self.coin_values,
+                "shine_items" : shine_items, "shine_replace_data" : shine_replace_data, "shine_colors" : shine_colors,
+                "shop_games" : shop_games, "shop_players" : shop_players, "shop_ap_items" : shop_ap_items,
+                "shop_replace_data" : shop_replace_data, "coin_values" : coin_values,
                 "regionals" : False}
 
     def create_regions(self):
-        if self.options.counts > 0:
+        # Check if this is Universal Tracker generation using existing slot data
+        if hasattr(self.multiworld, "generation_is_fake"):
+            if hasattr(self.multiworld, "re_gen_passthrough"):
+                if "Super Mario Odyssey" in self.multiworld.re_gen_passthrough:
+                    passthrough = self.multiworld.re_gen_passthrough["Super Mario Odyssey"]
+                    # Use the moon counts from the original generation
+                    self.moon_counts = passthrough["MoonCounts"]
+        elif self.options.counts > 0:
             self.randomize_moon_amounts()
         create_regions(self, self.multiworld, self.player)
 
@@ -215,6 +424,10 @@ class SMOWorld(World):
         set_rules(self, self.options)
 
     def create_item(self, name: str) -> Item:
+        # Glitch Logic item needs to be progression or UT doesn't use it
+        if name == self.glitches_item_name:
+            return SMOItem(self.glitches_item_name, ItemClassification.progression, self.player, None)
+
         item_id = self.item_name_to_id[name]
         classification: ItemClassification = ItemClassification.filler
         if name in filler_item_table.keys():
@@ -230,12 +443,9 @@ class SMOWorld(World):
                 # some outfits for dark and darker goals not handled correctly
                 classification = ItemClassification.filler
             elif name in capture_items:
-                if self.options.goal < 15 and capture_items.index(name) < 48:
-                    classification = ItemClassification.progression
-                else:
-                    classification = ItemClassification.filler
+                classification = ItemClassification.progression
             elif name in moon_types:
-                    classification = ItemClassification.progression
+                classification = ItemClassification.progression
 
         item: SMOItem
 
@@ -248,16 +458,15 @@ class SMOWorld(World):
         pool : list = []
 
         # Beat the Game
-        if self.options.goal > 14:
+        if self.options.goal > self.options.goal.option_moon:
             pool.append("Coins")
 
         # Beat Bowser in Cloud
-        if self.options.goal >= 9:
+        if self.options.goal >= self.options.goal.option_metro:
             pool.append("Coins")
 
         # Additively build pool
         # moons
-
 
         locations: list = []
         for location in self.get_locations():
@@ -265,7 +474,6 @@ class SMOWorld(World):
                 continue
             else:
                 locations += [location.name]
-        # print(locations)
 
         placement_counts = [
             0,
@@ -291,13 +499,13 @@ class SMOWorld(World):
             0,
             min(floor(self.moon_counts["cascade"] * self.options.extra_moons.value), self.max_counts["cascade"]),
             min(floor(self.moon_counts["sand"] * self.options.extra_moons.value), self.max_counts["sand"]),
-            min(floor(self.moon_counts["lake"] * self.options.extra_moons.value), self.max_counts["lake"]),
             min(floor(self.moon_counts["wooded"] * self.options.extra_moons.value), self.max_counts["wooded"]),
+            min(floor(self.moon_counts["lake"] * self.options.extra_moons.value), self.max_counts["lake"]),
             0,
             min(floor(self.moon_counts["lost"] * self.options.extra_moons.value), self.max_counts["lost"]),
             min(floor(self.moon_counts["metro"] * self.options.extra_moons.value), self.max_counts["metro"]),
-            min(floor(self.moon_counts["snow"] * self.options.extra_moons.value), self.max_counts["snow"]),
             min(floor(self.moon_counts["seaside"] * self.options.extra_moons.value), self.max_counts["seaside"]),
+            min(floor(self.moon_counts["snow"] * self.options.extra_moons.value), self.max_counts["snow"]),
             min(floor(self.moon_counts["luncheon"] * self.options.extra_moons.value), self.max_counts["luncheon"]),
             min(floor(self.moon_counts["ruined"] * self.options.extra_moons.value), self.max_counts["ruined"]),
             min(floor(self.moon_counts["bowser"] * self.options.extra_moons.value), self.max_counts["bowser"]),
@@ -306,14 +514,14 @@ class SMOWorld(World):
             0,
             0,
         ]
-        if self.options.goal == 16:
+        if self.options.goal == self.options.goal.option_dark:
             kingdoms : list = list(range(15))
             while sum(revised_counts[0:15]) < self.moon_counts["dark"]:
                 index = kingdoms[random.randint(0, len(kingdoms) - 1)]
                 revised_counts[index] += 1
                 if revised_counts[index] == self.max_checks[world_list[index].lower()]:
                     kingdoms.remove(index)
-        elif self.options.goal == 17:
+        elif self.options.goal == self.options.goal.option_darker:
             kingdoms: list = list(range(16))
             while sum(revised_counts[0:16]) < self.moon_counts["darker"]:
                 index = kingdoms[random.randint(0, len(kingdoms) - 1)]
@@ -357,6 +565,7 @@ class SMOWorld(World):
                             break
                     else:
                         item: str = "Coins"
+                        #print(location)
 
                     pool.append(item)
                     break
@@ -370,10 +579,6 @@ class SMOWorld(World):
                     pool.append("Coins")
                 else:
                     break
-
-        for item in self.multiworld.early_items[self.player]:
-            while item in pool:
-                pool.remove(item)
 
         locations : list = []
 
@@ -390,7 +595,7 @@ class SMOWorld(World):
                     pool.append(location)
                 elif self.options.shop_sanity == "shuffle":
                     item_names.append(location)
-                else:
+                elif self.options.shop_sanity != "off":
                     self.get_location(location).place_locked_item(self.create_item(location))
 
         # Souvenirs and stickers
@@ -398,7 +603,7 @@ class SMOWorld(World):
             if location in locations:
                 if self.options.shop_sanity == "non_outfits" or self.options.shop_sanity == "all":
                     pool.append(location)
-                else:
+                elif self.options.shop_sanity != "off":
                     self.get_location(location).place_locked_item(self.create_item(location))
 
         # Shop sanity shuffle
@@ -421,16 +626,26 @@ class SMOWorld(World):
         # Remove start_inventory items from pool
         for start_item in self.options.start_inventory:
             for num in range(self.options.start_inventory[start_item]):
-                pool.remove(start_item)
+                if start_item in pool:
+                    pool.remove(start_item)
+                else:
+                    print(f"Unable to remove start inventory item \"{start_item}\" from the item pool. Continuing without removing.")
 
-        #print(len(pool), len(list(self.multiworld.get_unfilled_locations(self.player))))
+        for item in self.multiworld.early_items[self.player]:
+            while item in pool:
+                pool.remove(item)
+
         if len(pool) < len(list(self.multiworld.get_unfilled_locations(self.player))):
+            print("Too few coins, adding more...")
             while len(pool) < len(list(self.multiworld.get_unfilled_locations(self.player))):
                 pool.append("Coins")
         else:
+            print("Too many coins, removing some...")
             while len(pool) > len(list(self.multiworld.get_unfilled_locations(self.player))):
                 pool.remove("Coins")
 
+        # Free a spot for the goal moon when the rules get set later
+        pool.remove("Coins")
 
         for i in pool:
             self.multiworld.itempool += [self.create_item(i)]
@@ -441,47 +656,68 @@ class SMOWorld(World):
 
     def randomize_moon_amounts(self):
         """ Randomizes the moon requirements for progressing to each kingdom."""
+        self.moon_counts = dict(self.vanilla_moon_counts)
+
+        kingdoms = list(self.moon_counts.keys())
+        vanilla_total = 124
         if self.options.counts == 1:
-            for key in self.moon_counts.keys():
-                if key != "dark" and key != "darker":
-                    self.moon_counts[key] = 1
-            kingdoms = list(self.moon_counts.keys())
             kingdoms.remove("dark")
             kingdoms.remove("darker")
+
+            for kingdom in kingdoms:
+                if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
+                    kingdoms.remove(kingdom)
+
             count = 0
             for kingdom in kingdoms:
+                self.moon_counts[kingdom] = max(self.vanilla_moon_counts[kingdom] - 5, 1)
                 count += self.moon_counts[kingdom]
-            while count != 124 and len(kingdoms) > 0:
+
+            vanilla_total = 0
+            temp_max_counts = {}
+            for kingdom in kingdoms:
+                vanilla_total += self.vanilla_moon_counts[kingdom]
+                temp_max_counts[kingdom] = min(self.max_counts[kingdom], self.vanilla_moon_counts[kingdom] + 5)
+
+            while count != vanilla_total and len(kingdoms) > 0:
                 selected = kingdoms[random.randint(0, len(kingdoms)-1)]
                 self.moon_counts[selected] += 1
                 count += 1
-                if self.moon_counts[selected] == self.max_counts[selected]:
+                if self.moon_counts[selected] == temp_max_counts[selected]:
                     kingdoms.remove(selected)
         elif self.options.counts == 2:
-            for key in self.moon_counts.keys():
-                if key != "dark" and key != "darker":
-                    self.moon_counts[key] = 1
-            self.moon_counts["ruined"] = 3
-            kingdoms = list(self.moon_counts.keys())
             kingdoms.remove("dark")
             kingdoms.remove("darker")
             kingdoms.remove("ruined")
-            count = 3
+
             for kingdom in kingdoms:
+                if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
+                    kingdoms.remove(kingdom)
+
+            count = 0
+            for kingdom in kingdoms:
+                self.moon_counts[kingdom] = max(self.vanilla_moon_counts[kingdom] - 5, 1)
                 count += self.moon_counts[kingdom]
-            while count != 124:
+
+            vanilla_total = 0
+            temp_max_counts = {}
+            for kingdom in kingdoms:
+                vanilla_total += self.vanilla_moon_counts[kingdom]
+                temp_max_counts[kingdom] = min(self.max_counts[kingdom], self.vanilla_moon_counts[kingdom] + 5)
+
+            while count != vanilla_total and len(kingdoms) > 0:
                 selected = kingdoms[random.randint(0, len(kingdoms)-1)]
                 self.moon_counts[selected] += 1
                 count += 1
-                if self.moon_counts[selected] == self.max_counts[selected]:
+                if self.moon_counts[selected] == temp_max_counts[selected]:
                     kingdoms.remove(selected)
         elif self.options.counts == 3:
             for key in self.moon_counts.keys():
-                self.moon_counts[key] = random.randint(int(self.moon_counts[key] * 0.8), int(self.moon_counts[key] * 1.25))
+                self.moon_counts[key] = random.randint(int(self.vanilla_moon_counts[key] * 0.8), int(self.vanilla_moon_counts[key] * 1.25))
 
         elif self.options.counts == 4:
             for key in self.moon_counts.keys():
-                self.moon_counts[key] = random.randint(int(self.moon_counts[key] * 1.0), int(self.moon_counts[key] * 2.0))
+                self.moon_counts[key] = random.randint(int(self.vanilla_moon_counts[key] * 1.0), int(self.vanilla_moon_counts[key] * 2.0))
         if self.moon_counts["dark"] > self.moon_counts["darker"]:
             temp = self.moon_counts["darker"]
             self.moon_counts["darker"] = self.moon_counts["dark"]
@@ -493,172 +729,32 @@ class SMOWorld(World):
             kingdoms = list(self.moon_counts.keys())
             kingdoms.remove("dark")
             kingdoms.remove("darker")
+
+            if self.options.counts == 2:
+                kingdoms.remove("ruined")
+
+            for kingdom in kingdoms:
+                if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
+                    kingdoms.remove(kingdom)
+
             count = 0
             for kingdom in kingdoms:
                 count += self.moon_counts[kingdom]
-            if count != 124:
-                raise Exception("Moon count exception! Moons required to beat the game is not 124, was " + str(count))
+            if count != vanilla_total:
+                raise Exception(f"Moon count exception! Moons required to beat the game is not {vanilla_total}, was {count}")
         # Change all outfit moon requirements to a proportion based on random Dark Side count
         # for key in self.outfit_moon_counts.keys():
         #     self.outfit_moon_counts[key] = int(self.outfit_moon_counts[key] * (self.moon_counts["dark"]/250))
             # if self.outfit_moon_counts[key] > self.moon_counts["dark"]:
             #     self.outfit_moon_counts[key] = self.moon_counts["dark"] - 1
 
-    def post_fill(self) -> None:
-        for player in range(1, self.multiworld.players + 1):
-            if not player in self.coin_values:
-                self.coin_values[player] = {}
-            for location in self.multiworld.get_locations(player):
-                if location.item.player == self.player:
-                    if location.item.name == "Coins":
-                        rand_num = self.random.randint(0,99)
-                        if rand_num < 44:
-                            coin_amount = self.random.randint(50, 100)
-                            location.item.name = f"{str(coin_amount)} " + location.item.name
-                            self.coin_values[location.player][location.address] = coin_amount
-                        elif rand_num < 74:
-                            coin_amount = self.random.randint(101, 250)
-                            location.item.name = f"{str(coin_amount)} " + location.item.name
-                            self.coin_values[location.player][location.address] = coin_amount
-                        elif rand_num < 89:
-                            coin_amount = self.random.randint(251, 500)
-                            location.item.name = f"{str(coin_amount)} " + location.item.name
-                            self.coin_values[location.player][location.address] = coin_amount
-                        elif rand_num < 96:
-                            coin_amount = self.random.randint(501, 750)
-                            location.item.name = f"{str(coin_amount)} " + location.item.name
-                            self.coin_values[location.player][location.address] = coin_amount
-                        elif rand_num < 100:
-                            coin_amount = self.random.randint(751, 1000)
-                            location.item.name = f"{str(coin_amount)} " + location.item.name
-                            self.coin_values[location.player][location.address] = coin_amount
-
-
-
-        for world_id in range(len(location_hint_list)):
-            self.shine_replace_data[world_id] = {}
-            self.shine_items[world_id] = []
-
-        for location in self.multiworld.get_locations(self.player):
-            for world_id in range(len(location_hint_list)):
-                if self.location_name_to_id[location.name] in location_hint_list[world_id]:
-                    if not location.item.name in self.shine_items[world_id]:
-                        self.shine_items[world_id].append(location.item.name.replace("_", " "))
-
-        # Sort shine item lists
-        for world_id in range(len(location_hint_list)):
-            self.shine_items[world_id] = sorted(self.shine_items[world_id])
-
-        for world_id in range(len(location_hint_list)):
-            for hint_id in range(len(location_hint_list[world_id])):
-                for key in list(location_hint_list[world_id].keys()):
-                    if location_hint_list[world_id][key] == hint_id:
-                        loc_name = self.location_id_to_name[key]
-                        if loc_name in self.multiworld.regions.location_cache[self.player]:
-                            location = self.multiworld.get_location(loc_name, self.player)
-                            name_index : int = self.shine_items[world_id].index(location.item.name.replace("_", " "))
-                            self.shine_replace_data[world_id][hint_id] = [-1, name_index]
-                        else:
-                            self.shine_replace_data[world_id][hint_id] = [-1, 255]
-
-        match self.options.colors.value:
-            case self.options.colors.option_off:
-                self.color_list = [0, 0, 5, 2, 7, 0, 0, 1, 8, 4, 6, 0, 3, 9, -1, 9, 9, 27]
-                for location in self.get_locations():
-                    for kingdom in range(17):
-                        if location.name in full_moon_locations_list[kingdom]:
-                            self.shine_colors[self.location_name_to_id[location.name]] = self.color_list[kingdom]
-
-            case self.options.colors.option_kingdom_random:
-                colors = list(range(30))
-                for i in range(17):
-                    self.color_list.append(colors.pop(self.random.randint(0, len(colors) - 1)))
-                for location in self.get_locations():
-                    for kingdom in range(17):
-                        if location.name in full_moon_locations_list[kingdom]:
-                            self.shine_colors[self.location_name_to_id[location.name]] = self.color_list[kingdom]
-
-            case self.options.colors.option_item:
-                self.color_list = [10, 0, 5, 2, 7, 11, 12, 1, 8, 4, 6, 13, 3, 9, -1, 14, 15, 27]
-                for location in self.get_locations():
-                    for kingdom in range(17):
-                        if self.location_name_to_id[location.name] < 1168:
-                            if location.item.game == self.game:
-                                if world_list[kingdom] in location.item.name:
-                                    self.shine_colors[self.location_name_to_id[location.name]] = self.color_list[kingdom]
-                                    break
-                            else:
-                                self.shine_colors[self.location_name_to_id[location.name]] = self.color_list[17]
-                                break
-
-            case self.options.colors.option_classification:
-                pass
-
-            case self.options.colors.option_item_random:
-                colors = list(range(30))
-                for i in range(18):
-                    self.color_list.append(colors.pop(self.random.randint(0, len(colors) - 1)))
-                for location in self.get_locations():
-                    for kingdom in range(17):
-                        if self.location_name_to_id[location.name] < 1168:
-                            if location.item.game == self.game:
-                                if world_list[kingdom] in location.item.name:
-                                    self.shine_colors[self.location_name_to_id[location.name]] = self.color_list[kingdom]
-                                    break
-                            else:
-                                self.shine_colors[self.location_name_to_id[location.name]] = self.color_list[17]
-                                break
-
-            case self.options.colors.option_classification_random:
-                pass
-
-            case self.options.colors.option_chaos:
-                for location in self.get_locations():
-                    if self.location_name_to_id[location.name] < 1168:
-                        self.shine_colors[self.location_name_to_id[location.name]] = self.random.randint(0,30)
-
-        self.shop_replace_data["caps"] = {}
-        self.shop_replace_data["clothes"] = {}
-        self.shop_replace_data["stickers"] = {}
-        self.shop_replace_data["souvenirs"] = {}
-        self.shop_replace_data["moons"] = {}
-        self.shop_games = []
-        self.shop_players = []
-        self.shop_ap_items = []
-        for location in self.multiworld.get_locations(self.player):
-            if location.name in shop_items or location.name in outfits or "Shopping" in location.name:
-                if not self.multiworld.get_player_name(location.item.player) in self.shop_players:
-                    self.shop_players.append(self.multiworld.get_player_name(location.item.player))
-                if not location.item.name in self.shop_ap_items:
-                    self.shop_ap_items.append(location.item.name.replace("_", " "))
-                if not location.item.game in self.shop_games:
-                    self.shop_games.append(location.item.game.replace("_", " "))
-        self.shop_games = sorted(self.shop_games)
-        self.shop_players = sorted(self.shop_players)
-        self.shop_ap_items = sorted(self.shop_ap_items)
-        for location in self.multiworld.get_locations(self.player):
-                if self.location_name_to_id[location.name] < 2582 :
-                    if "Shopping" in location.name:
-                        self.shop_replace_data["moons"][self.location_name_to_id[location.name]] = [self.shop_games.index(location.item.game.replace("_", " ")),
-                        self.shop_players.index(self.multiworld.get_player_name(location.item.player)),
-                        self.shop_ap_items.index(location.item.name.replace("_", " ")), location.item.classification.value]
-                    else:
-                        if 2539 > self.location_name_to_id[location.name] > 2500 or 2582 > self.location_name_to_id[location.name] > 2576:
-                            self.shop_replace_data["caps"][self.location_name_to_id[location.name]] = [self.shop_games.index(location.item.game.replace("_", " ")),
-                            self.shop_players.index(self.multiworld.get_player_name(location.item.player)),
-                            self.shop_ap_items.index( location.item.name.replace("_", " ")), location.item.classification.value]
-                        if self.location_name_to_id[location.name] > 2538:
-                            self.shop_replace_data["clothes"][self.location_name_to_id[location.name]] = [self.shop_games.index(location.item.game.replace("_", " ")),
-                            self.shop_players.index(self.multiworld.get_player_name(location.item.player)),
-                            self.shop_ap_items.index(location.item.name.replace("_", " ")), location.item.classification.value]
-                if location.name in stickers:
-                    self.shop_replace_data["stickers"][self.location_name_to_id[location.name]] = [self.shop_games.index(location.item.game.replace("_", " ")),
-                    self.shop_players.index(self.multiworld.get_player_name(location.item.player)),
-                    self.shop_ap_items.index(location.item.name.replace("_", " ")), location.item.classification.value]
-                if location.name in souvenirs:
-                    self.shop_replace_data["souvenirs"][self.location_name_to_id[location.name]] = [self.shop_games.index(location.item.game.replace("_", " ")),
-                    self.shop_players.index(self.multiworld.get_player_name(location.item.player)),
-                    self.shop_ap_items.index(location.item.name.replace("_", " ")), location.item.classification.value]
+    def write_spoiler_header(self, spoiler_handle: TextIO) -> None:
+        if self.options.counts > 0:
+            text = f"{'Moon Requirements:':33}"
+            for key in self.moon_counts.keys():
+                if world_list.index(key.capitalize()) <= self.options.goal:
+                    text += f"\n{'':33}{(key.capitalize() + (' Kingdom: ' if world_list.index(key.capitalize()) < self.options.goal.option_dark else ' Side: '))}{str(self.moon_counts[key])}"
+            spoiler_handle.write(text)
 
     def generate_output(self, output_directory: str):
         pass
@@ -668,4 +764,33 @@ class SMOWorld(World):
         #     write_patch(self, patch)
         #     patch.write(os.path.join(output_directory, f"{out_base}{patch.patch_file_ending}"))
 
+    def interpret_slot_data(self, slot_data: dict[str, any]) -> dict[str, any]:
+        """Parse slot data for Universal Tracker to properly validate logic and track progression."""
+        relevant_data = {}
+        
+        # Parse moon count requirements for each kingdom
+        relevant_data["MoonCounts"] = slot_data["counts"]
+        
+        # Parse game options
+        relevant_data["Goal"] = slot_data["goal"]
+        relevant_data["Colors"] = slot_data["colors"]
+        relevant_data["CaptureSanity"] = slot_data["capture_sanity"]
+        
+        # Parse shine data structures (for hint system)
+        relevant_data["ShineItems"] = slot_data["shine_items"]
+        relevant_data["ShineReplaceData"] = slot_data["shine_replace_data"]
+        relevant_data["ShineColors"] = slot_data["shine_colors"]
+        
+        # Parse shop data structures
+        relevant_data["ShopGames"] = slot_data["shop_games"]
+        relevant_data["ShopPlayers"] = slot_data["shop_players"]
+        relevant_data["ShopAPItems"] = slot_data["shop_ap_items"]
+        relevant_data["ShopReplaceData"] = slot_data["shop_replace_data"]
+        
+        # Parse coin values
+        relevant_data["CoinValues"] = slot_data["coin_values"]
+        
+        return relevant_data
 
+    def custom_ut_sort(self, region_label: str, location_label: str) -> int:
+        return locations_table[location_label]
