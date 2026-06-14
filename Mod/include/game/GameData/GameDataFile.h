@@ -26,7 +26,16 @@ class TimeBalloonSaveData;
 class WorldWarpTalkData;
 class VisitStageData;
 class MoonRockData;
-class BossSaveData;
+class BossSaveData
+{
+    public:
+        virtual void write();
+        bool* mIsShowDemoBossBattleStartLv1;
+        bool* mIsShowDemoBossBattleStartLv2;
+        bool* mIsAlreadyDeadGKLv1;
+        bool* mIsAlreadyDeadGKLv2;
+        bool* mIsAlreadyDeadGKLv3;
+};
 class AchievementSaveData;
 class SearchAmiiboDataTable;
 class NetworkUploadFlag;

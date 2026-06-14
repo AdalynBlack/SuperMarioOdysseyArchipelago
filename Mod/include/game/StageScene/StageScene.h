@@ -3,6 +3,7 @@
 #include "al/scene/Scene.h"
 #include "game/StageScene/StageSceneLayout.h"
 #include "game/StageScene/StageSceneStatePauseMenu.h"
+#include "game/StageScene/StageSceneStateYukimaruRace.h"
 
 namespace al {
 struct LayoutTextureRenderer;
@@ -17,6 +18,7 @@ class StageScene : public al::Scene
 {
     public:
         bool isPause() const;
+        void kill() override;
 
         sead::FixedSafeString<0x40> mStageName;
         int field_130;
@@ -34,11 +36,11 @@ class StageScene : public al::Scene
         struct StageSceneStateSkipDemo *field_190;
         struct StageSceneStateCheckpointWarp *field_198;
         struct StageSceneStateCarryMeat *field_1A0;
-        void *field_1A8;
+        struct StageSceneStateTimeBalloon *field_1A8;
         void *field_1B0;
         struct StageSceneStateMiss *field_1B8;
-        struct StageSceneStateYukimaruRace *field_1C0;
-        struct StageSceneStateYukimaruRaceTutorial *field_1C8;
+        StageSceneStateYukimaruRace *mStageSceneStateYukimaruRace;
+        struct StageSceneStateYukimaruRaceTutorial *mStageSceneStateYukimaruRaceTutorial;
         struct StageSceneStateRaceManRace *field_1D0;
         struct StageSceneStateRadicon *field_1D8;
         struct StageSceneStateScenarioCamera *field_1E0;

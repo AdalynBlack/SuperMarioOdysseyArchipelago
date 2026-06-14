@@ -193,6 +193,10 @@ public:
     static bool isUnlockFirstForest(void);
     
     static bool isUnlockFirstSea(void);
+
+    static void loseRace(GameDataHolderWriter);
+
+    static void returnPrevStage(GameDataHolderWriter);
 };
 
 namespace CustomGameDataFunction {

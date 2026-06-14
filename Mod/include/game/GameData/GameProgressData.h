@@ -7,4 +7,5 @@ class GameProgressData {
         void talkCapNearHomeInWaterfall(void);
         void crashHome();
         bool isUnlockWorld(int) const;
+        s32 mWaterfallWorldProgress;
 };

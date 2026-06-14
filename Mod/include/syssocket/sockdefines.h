@@ -141,6 +141,13 @@
 #define	SOL_SOCKET	0xffff		/* options for socket level */
 
 /*
+ * Shutdown method
+ */
+#define SHUT_RD	0
+#define SHUT_WR 1
+#define SHUT_RDWR 2
+
+/*
  * Address families.
  */
 #define	AF_UNSPEC	0		/* unspecified */

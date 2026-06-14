@@ -16,9 +16,6 @@
 
 #include "game/GameData/GameDataHolderAccessor.h"
 
-#include "rs/util/SceneUtil.h"
-#include "rs/util/UIUtil.h"
-
 #include <container/seadPtrArray.h>
 
 /* 

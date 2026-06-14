@@ -11,7 +11,7 @@
 #include "al/util.hpp"
 #include "al/util/NerveUtil.h"
 
-#include "game/UI/MenuSelectParts.h"
+#include "al/layout/MenuSelectParts.h"
 #include "logger.hpp"
 
 class FooterParts;
