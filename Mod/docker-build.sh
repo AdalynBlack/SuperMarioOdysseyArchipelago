@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ISEMU=${1:-0}
+ISEMU=${1:-1}
 
 export DOCKER_BUILDKIT=1
 docker build . -t smoo-client-build
