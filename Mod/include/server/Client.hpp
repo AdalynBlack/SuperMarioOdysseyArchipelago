@@ -61,7 +61,7 @@
 #include "puppets/HackModelHolder.hpp"
 #include "puppets/PuppetHolder.hpp"
 #include "syssocket/sockdefines.h"
-#include "debugMenu.hpp"
+#include "debug/DebugMenu.h"
 #include "Keyboard.hpp"
 
 #include "puppets/PuppetInfo.h"
@@ -190,7 +190,7 @@ class Client {
         static void setCheckIndex(int index);
         static int getCheckIndex() { return sInstance ? sInstance->checkIndex : 0; };
 
-        static void appendMessage(const char *message);
+        static void appendMessage(const char *format, ...);
         static void shiftMessages();
 
         static Keyboard* getKeyboard();

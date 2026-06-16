@@ -47,7 +47,7 @@
 #include "helpers.hpp"
 #include "logger.hpp"
 #include "server/Client.hpp"
-#include "debugMenu.hpp"
+#include "debug/DebugMenu.h"
 #include "Keyboard.hpp"
 #include "server/DeltaTime.hpp"
 

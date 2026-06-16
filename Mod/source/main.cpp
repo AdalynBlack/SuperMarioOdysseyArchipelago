@@ -31,7 +31,7 @@
 #include "al/util/HeapUtil.h"
 #include "al/util/NerveUtil.h"
 #include "al/layout/IUseLayout.h"
-#include "debugMenu.hpp"
+#include "ImmOverlayMenu.h"
 #include "game/GameData/GameDataFunction.h"
 #include "game/HakoniwaSequence/HakoniwaSequence.h"
 #include "game/Player/PlayerFunction.h"
@@ -226,312 +226,15 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
 
 // ------------- Hooks -------------
 
-int debugPuppetIndex = 0;
-int debugCaptureIndex = 0;
-static int pageIndex = 0;
 
-static const int maxPages = 3;
-
-void printf_colored(char const *message)
-{
-    int length = strlen(message);
-    for (int i = 0; i < length; i++)
-    {
-        // Ansi color code starts here
-        if(message[i] == '\x1b') {
-            // Skip to the number. We don't care about the rest
-            i += 2;
-
-            // Ansi code was incomplete
-            if (i >= length)
-                return;
-
-            int color_code = atoi(message + i);
-
-            // Scan until we find the termination character
-            do {
-                i++;
-                // Ansi code was incomplete
-                if (i >= length)
-                    return;
-            } while (message[i] != 'm');
-            // Ansi code was incomplete
-            if (i >= length)
-                return;
-
-            switch (color_code)
-            {
-                // No BG colors, bold, or underline support. Just ignore them
-                case 0: // Reset
-                case 37: // White
-                    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, .8f);
-                    break;
-                case 30: // Black
-                    gTextWriter->mColor = sead::Color4f(0.f, 0.f, 0.f, .8f);
-                    break;
-                case 31: // Red
-                    gTextWriter->mColor = sead::Color4f(1.f, 0.f, 0.f, .8f);
-                    break;
-                case 32: // Green
-                    gTextWriter->mColor = sead::Color4f(0.f, 1.f, 0.5f, .8f);
-                    break;
-                case 33: // Yellow
-                    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 0.467f, .8f);
-                    break;
-                case 34: // Blue
-                    gTextWriter->mColor = sead::Color4f(0.392f, 0.584f, 0.929f, .8f);
-                    break;
-                case 35: // Magenta
-                    gTextWriter->mColor = sead::Color4f(1.f, 0.f, 1.f, .8f);
-                    break;
-                case 36: // Cyan
-                    gTextWriter->mColor = sead::Color4f(0.f, 1.f, 1.f, .8f);
-                    break;
-            }
-        } else {
-            gTextWriter->printf("%c", message[i]);
-        }
-    }
-}
-
-void drawMainHook(HakoniwaSequence *curSequence, sead::Viewport *viewport, sead::DrawContext *drawContext) {
-
-    // sead::FrameBuffer *frameBuffer;
-    // __asm ("MOV %[result], X21" : [result] "=r" (frameBuffer));
-
-    // if(Application::sInstance->mFramework) {
-    //     Application::sInstance->mFramework->mGpuPerf->drawResult((agl::DrawContext *)drawContext, frameBuffer);
-    // }
-
+void drawMainHook(HakoniwaSequence *sequence, sead::Viewport *viewport, sead::DrawContext *drawContext) {
     Time::calcTime();  // this needs to be ran every frame, so running it here works
 
-    int dispHeight = al::getLayoutDisplayHeight();
+    ImmOverlayMenu::draw(viewport, sequence, isInGame);
 
-    gTextWriter->mViewport = viewport;
-
-    al::Scene* curScene = curSequence->curScene;
-
-    if (Client::getQueueLength() == 0)
-    {
-        messageShiftTimer = 0;
-    }
-
-    if (messageShiftTimer > (10 - Client::getQueueLength()) * 150)
-    {
-        messageShiftTimer = 0;
-        Client::shiftMessages();
-    }
-
-    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, 0.8f);
-
-    if (curScene && isInGame && (Client::getQueueLength() > 0) && !debugMode) {
-        drawApChatBackground((agl::DrawContext*)drawContext, Client::getQueueLength() * 1.f);
-
-        gTextWriter->beginDraw();
-        gTextWriter->setScaleFromFontHeight(15.f);
-
-        //rs::showCapMessage()
-
-        int height_offset = (6 - Client::getQueueLength());
-        for (int i = 0; i < Client::getQueueLength(); i++)
-        {
-            gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, (dispHeight * 7 / 10) + 18.f * (i + height_offset)));
-            printf_colored(Client::getAPChatMessage(i).cstr());
-        }
-
-        messageShiftTimer++;
-    }
-
-    if(!debugMode) {
-        al::executeDraw(curSequence->mLytKit, "２Ｄオーバー（メイン画面）");
-        return;
-    }
-
-    // int dispWidth = al::getLayoutDisplayWidth();
-
-    gTextWriter->printf("FPS: %d\n", static_cast<int>(round(Application::sInstance->mFramework->calcFps())));
-
-    drawBackground((agl::DrawContext*)drawContext);
-
-    gTextWriter->setCursorFromTopLeft(sead::Vector2f(10.f, (dispHeight / 3) + 30.f));
-    gTextWriter->setScaleFromFontHeight(20.f);
-
-    sead::Heap* clientHeap = Client::getClientHeap();
-    sead::Heap *gmHeap = GameModeManager::instance()->getHeap();
-
-    if (clientHeap) {
-        gTextWriter->printf("Client Heap Free Size: %f/%f\n", clientHeap->getFreeSize() * 0.001f, clientHeap->getSize() * 0.001f);
-        gTextWriter->printf("Gamemode Heap Free Size: %f/%f\n", gmHeap->getFreeSize() * 0.001f, gmHeap->getSize()* 0.001f);
-    }
-
-    gTextWriter->printf("Client Socket Connection Status: %s\n", Client::instance()->mSocket->getStateChar());
-	gTextWriter->printf("Udp socket status: %s\n", Client::instance()->mSocket->getUdpStateChar());
-    //gTextWriter->printf("nn::socket::GetLastErrno: 0x%x\n", Client::instance()->mSocket->socket_errno);
-    gTextWriter->printf("Connected Players: %d/%d\n", Client::getConnectCount() + 1, Client::getMaxPlayerCount());
-    
-    gTextWriter->printf("Send Queue Count: %d/%d\n", Client::instance()->mSocket->getSendCount(), Client::instance()->mSocket->getSendMaxCount());
-    gTextWriter->printf("Recv Queue Count: %d/%d\n", Client::instance()->mSocket->getRecvCount(), Client::instance()->mSocket->getRecvMaxCount());
-
-    if(curScene && isInGame) {
-
-        sead::LookAtCamera *cam = al::getLookAtCamera(curScene, 0);
-        sead::Projection* projection = al::getProjectionSead(curScene, 0);
-
-        PlayerActorBase* playerBase = rs::getPlayerActor(curScene);
-
-        PuppetActor* curPuppet = Client::getPuppet(debugPuppetIndex);
-
-        PuppetActor *debugPuppet = Client::getDebugPuppet();
-
-        if (debugPuppet) {
-            curPuppet = debugPuppet;
-        }
-
-        sead::PrimitiveRenderer *renderer = sead::PrimitiveRenderer::instance();
-        renderer->setDrawContext(drawContext);
-        renderer->setCamera(*cam);
-        renderer->setProjection(*projection);
-
-        gTextWriter->printf("----------- Page %d ------------\n", pageIndex);
-        switch (pageIndex)
-        {
-        case 0:
-            {
-                // PuppetActor *curPuppet = Client::getDebugPuppet();
-
-                if(curPuppet) {
-
-                    al::LiveActor* curModel = curPuppet->getCurrentModel();
-
-                    PuppetInfo* curPupInfo = curPuppet->getInfo();
-
-                    if (curModel && curPupInfo) {
-                        // al::LiveActor *curCapture = curPuppet->getCapture(debugCaptureIndex);
-
-                        gTextWriter->printf("Puppet Index: %d\n", debugPuppetIndex);
-                        gTextWriter->printf("Player Name: %s\n", curPupInfo->puppetName);
-                        gTextWriter->printf("Connection Status: %s\n", curPupInfo->isConnected ? "Online" : "Offline");
-                        gTextWriter->printf("Is in Same Stage: %s\n", curPupInfo->isInSameStage ? "True" : "False");
-                        gTextWriter->printf("Is in Capture: %s\n", curPupInfo->isCaptured ? "True" : "False");
-                        gTextWriter->printf("Puppet Stage: %s\n", curPupInfo->stageName);
-                        gTextWriter->printf("Puppet Scenario: %u\n", curPupInfo->scenarioNo);
-                        gTextWriter->printf("Puppet Costume: H: %s B: %s\n", curPupInfo->costumeHead, curPupInfo->costumeBody);
-                        //gTextWriter->printf("Packet Coords:\nX: %f\nY: %f\nZ: %f\n", curPupInfo->playerPos.x, curPupInfo->playerPos.y, curPupInfo->playerPos.z);
-                        // if (curModel) {
-                        //     sead::Vector3f* pupPos = al::getTrans(curModel);
-                        //     gTextWriter->printf("In-Game Coords:\nX: %f\nY: %f\nZ: %f\n", pupPos->x, pupPos->y, pupPos->z);
-                        // }
-
-                        if(curPupInfo->isCaptured) {
-                            gTextWriter->printf("Current Capture: %s\n", curPupInfo->curHack);
-                            gTextWriter->printf("Current Packet Animation: %s\n", curPupInfo->curAnimStr);
-                            gTextWriter->printf("Animation Index: %d\n", curPupInfo->curAnim);
-                        }else {
-                            gTextWriter->printf("Current Packet Animation: %s\n", curPupInfo->curAnimStr);
-                            gTextWriter->printf("Animation Index: %d\n", curPupInfo->curAnim);
-                            if (curModel) {
-                                gTextWriter->printf("Current Animation: %s\n", al::getActionName(curModel));
-                            }
-                        }
-                    }
-                }
-            }
-            break;
-        case 1:
-            {
-                PuppetActor* debugPuppet = Client::getDebugPuppet();
-                PuppetInfo* debugInfo = Client::getDebugPuppetInfo();
-
-                if (debugPuppet && debugInfo) {
-
-                    al::LiveActor *curModel = debugPuppet->getCurrentModel();
-
-                    gTextWriter->printf("Is Debug Puppet Tagged: %s\n", BTOC(debugInfo->isIt));
-
-                }
-
-                BossSaveData *bossSaveData = curSequence->mGameDataHolder.mData->mGameDataFile->mBossSaveData;
-                gTextWriter->printf("lv1[0]: %d\n", bossSaveData->mIsAlreadyDeadGKLv1[0]);
-                gTextWriter->printf("lv1[1]: %d\n", bossSaveData->mIsAlreadyDeadGKLv1[1]);
-                gTextWriter->printf("lv1[2]: %d\n", bossSaveData->mIsAlreadyDeadGKLv1[2]);
-                gTextWriter->printf("lv1[3]: %d\n", bossSaveData->mIsAlreadyDeadGKLv1[3]);
-                gTextWriter->printf("lv2[0]: %d\n", bossSaveData->mIsAlreadyDeadGKLv2[0]);
-                gTextWriter->printf("lv2[1]: %d\n", bossSaveData->mIsAlreadyDeadGKLv2[1]);
-                gTextWriter->printf("lv2[2]: %d\n", bossSaveData->mIsAlreadyDeadGKLv2[2]);
-                gTextWriter->printf("lv2[3]: %d\n", bossSaveData->mIsAlreadyDeadGKLv2[3]);
-                gTextWriter->printf("lv3[0]: %d\n", bossSaveData->mIsAlreadyDeadGKLv3[0]);
-                gTextWriter->printf("lv3[1]: %d\n", bossSaveData->mIsAlreadyDeadGKLv3[1]);
-                gTextWriter->printf("lv3[2]: %d\n", bossSaveData->mIsAlreadyDeadGKLv3[2]);
-                gTextWriter->printf("lv3[3]: %d\n", bossSaveData->mIsAlreadyDeadGKLv3[3]);
-            }
-            break;
-        case 2:
-            {
-            PlayerHackKeeper* hackKeeper = playerBase->getPlayerHackKeeper();
-
-            if (hackKeeper) {
-
-                PlayerActorHakoniwa *p1 = (PlayerActorHakoniwa*)playerBase; // its safe to assume that we're using a playeractorhakoniwa if the hack keeper isnt null
-
-                if(hackKeeper->currentHackActor) {
-
-                    al::LiveActor *curHack = hackKeeper->currentHackActor;
-
-                    gTextWriter->printf("Current Hack Animation: %s\n", al::getActionName(curHack));
-
-                    const char* hackName = hackKeeper->getCurrentHackName();
-                    gTextWriter->printf("Current Hack Name: %s\n", hackName);
-                    sead::Quatf captureRot = curHack->mPoseKeeper->getQuat();
-                    gTextWriter->printf("Current Hack Rot: %f %f %f %f\n", captureRot.x,
-                                        captureRot.y, captureRot.z, captureRot.w);
-                    sead::Quatf calcRot;
-                    al::calcQuat(&calcRot, curHack);
-                    gTextWriter->printf("Calc Hack Rot: %f %f %f %f\n", calcRot.x,
-                                        calcRot.y, calcRot.z, calcRot.w);
-                } else { 
-                    gTextWriter->printf("Cur Action: %s\n", p1->mPlayerAnimator->mAnimFrameCtrl->getActionName());
-                    gTextWriter->printf("Cur Sub Action: %s\n", p1->mPlayerAnimator->curSubAnim.cstr());
-                    gTextWriter->printf("Is Cappy Flying? %s\n", BTOC(p1->mHackCap->isFlying()));
-                    if(p1->mHackCap->isFlying()) {
-                        gTextWriter->printf("Cappy Action: %s\n", al::getActionName(p1->mHackCap));
-                        sead::Vector3f *capTrans = al::getTransPtr(p1->mHackCap);
-                        sead::Vector3f *capRot = &p1->mHackCap->mJointKeeper->mJointRot;
-                        gTextWriter->printf("Cap Coords:\nX: %f\nY: %f\nZ: %f\n", capTrans->x, capTrans->y, capTrans->z);
-                        gTextWriter->printf("Cap Rot:\nX: %f\nY: %f\nZ: %f\n", capRot->x, capRot->y, capRot->z);
-                        gTextWriter->printf("Cap Skew: %f\n", p1->mHackCap->mJointKeeper->mSkew);
-                    }
-                }
-            }
-            
-            }
-            break;
-        default:
-            break;
-        }
-
-        renderer->begin();
-
-        //sead::Matrix34f mat = sead::Matrix34f::ident;
-        //mat.setBase(3, sead::Vector3f::zero); // Sets the position of the matrix.
-                             // For cubes, you need to put this at the location.
-                             // For spheres, you can leave this at 0 0 0 since you set it in its draw function.
-        renderer->setModelMatrix(sead::Matrix34f::ident);
-
-        if (curPuppet) {
-            renderer->drawSphere4x8(curPuppet->getInfo()->playerPos, 20, sead::Color4f(1.f, 0.f, 0.f, 0.25f));
-            renderer->drawSphere4x8(al::getTrans(curPuppet), 20, sead::Color4f(0.f, 0.f, 1.f, 0.25f));
-        }
-
-        renderer->end();
-
-        isInGame = false;
-    }
-
-    gTextWriter->endDraw();
-
+    // Replicate the functionality of the original code
     // 2D Background (Main Surface)
-    al::executeDraw(curSequence->mLytKit, "２Ｄオーバー（メイン画面）");
-
+    al::executeDraw(sequence->mLytKit, "２Ｄバック（メイン画面）");
 }
 
 bool isGrabShine(GameDataHolderAccessor accessor, int shineIdx) {
@@ -906,7 +609,6 @@ void onUnlockLost(GameDataHolderWriter writer, int worldIndex)
 
 void onCreditsStart(al::Scene* thisPtr, const al::SceneInitInfo info) {
 
-    //Client::setScenario(GameDataFunction::getWorldIndexPeach(), 2);
     Client::sendCheckPacket(2499, -1);
     
     thisPtr->initDrawSystemInfo(info);
@@ -920,7 +622,6 @@ bool skipHackCutscene(DemoStateHackFirst* thisPtr, IUsePlayerHack** param_1, al:
 }
 
 void stageInitHook(al::ActorInitInfo *info, StageScene *curScene, al::PlacementInfo const *placement, al::LayoutInitInfo const *lytInfo, al::ActorFactory const *factory, al::SceneMsgCtrl *sceneMsgCtrl, al::GameDataHolderBase *dataHolder) {
-
     al::initActorInitInfo(info, curScene, placement, lytInfo, factory, sceneMsgCtrl,
                           dataHolder);
 
@@ -963,7 +664,7 @@ ulong constructHook() {  // hook for constructing anything we need to globally b
 
     __asm("MOV %[result], X20"
           : [result] "=r"(
-              initInfo));  // Save our scenes init info to a gloabl ptr so we can access it later
+              initInfo));  // Save our scene's init info to a gloabl ptr so we can access it later
 
     Client::createInstance(al::getCurrentHeap());
     GameModeManager::createInstance(al::getCurrentHeap()); // Create the GameModeManager on the current al heap
@@ -982,12 +683,15 @@ bool threadInit(HakoniwaSequence *mainSeq) {  // hook for initializing client cl
     return GameDataFunction::isPlayDemoOpening(mainSeq->mGameDataHolder);
 }
 
+
 bool hakoniwaSequenceHook(HakoniwaSequence* sequence) {
+    bool isFirstStep = al::isFirstStep(sequence);
     StageScene* stageScene = (StageScene*)sequence->curScene;
 
-    static bool isCameraActive = false;
-
-    bool isFirstStep = al::isFirstStep(sequence);
+    if (!stageScene) {
+        isInGame = false;
+        return isFirstStep;
+    }
 
     al::PlayerHolder *pHolder = al::getScenePlayerHolder(stageScene);
     PlayerActorBase* playerBase = al::tryGetPlayerActor(pHolder, 0);
@@ -1003,78 +707,7 @@ bool hakoniwaSequenceHook(HakoniwaSequence* sequence) {
 
     updatePlayerInfo(stageScene, playerBase, isYukimaru);
 
-    static bool isDisableMusic = false;
-
-    if (al::isPadHoldZR(-1)) {
-        if (al::isPadTriggerUp(-1)) debugMode = !debugMode;
-        if (al::isPadTriggerLeft(-1)) pageIndex--;
-        if (al::isPadTriggerRight(-1)) pageIndex++;
-        if(pageIndex < 0) {
-            pageIndex = maxPages - 1;
-        }
-        if(pageIndex >= maxPages) pageIndex = 0;
-
-    } else if (al::isPadHoldZL(-1)) {
-
-        if (debugMode) {
-            if (al::isPadTriggerLeft(-1)) debugPuppetIndex--;
-            if (al::isPadTriggerRight(-1)) debugPuppetIndex++;
-
-            if(debugPuppetIndex < 0) {
-                debugPuppetIndex = Client::getMaxPlayerCount() - 2;
-            }
-            if (debugPuppetIndex >= Client::getMaxPlayerCount() - 1)
-                debugPuppetIndex = 0;
-        }
-
-    } else if (al::isPadHoldL(-1)) {
-        if (al::isPadTriggerLeft(-1)) GameModeManager::instance()->toggleActive();
-        if (al::isPadTriggerRight(-1)) {
-            if (debugMode) {
-                
-                PuppetInfo* debugPuppet = Client::getDebugPuppetInfo();
-                
-                if (debugPuppet) {
-
-                    debugPuppet->playerPos = al::getTrans(playerBase);
-                    al::calcQuat(&debugPuppet->playerRot, playerBase);
-
-                    PlayerHackKeeper* hackKeeper = playerBase->getPlayerHackKeeper();
-
-                    if (hackKeeper) {
-                        const char *hackName = hackKeeper->getCurrentHackName();
-                        debugPuppet->isCaptured = hackName != nullptr;
-                        if (debugPuppet->isCaptured) {
-                            strcpy(debugPuppet->curHack, hackName);
-                        } else {
-                            strcpy(debugPuppet->curHack, "");
-                        }
-                    }
-                    
-                }
-            }
-        }
-        if (al::isPadTriggerUp(-1)) {
-            if (debugMode) {
-                PuppetActor* debugPuppet = Client::getDebugPuppet();
-                if (debugPuppet) {
-                    PuppetInfo *info = debugPuppet->getInfo();
-                    // info->isIt = !info->isIt;
-
-                    debugPuppet->emitJoinEffect();
-                    
-                }
-            } else {
-                isDisableMusic = !isDisableMusic;
-            }
-        }
-    }
-
-    if (isDisableMusic) {
-        if (al::isPlayingBgm(stageScene)) {
-            al::stopAllBgm(stageScene, 0);
-        }
-    }
+    debug::DebugMenu::updateInputs(stageScene);
 
     return isFirstStep;
 }

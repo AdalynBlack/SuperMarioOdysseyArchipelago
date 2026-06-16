@@ -1989,11 +1989,7 @@ bool Client::hasCapture(const char* capture) {
     int index = getIndexCaptureList(capture);
     if (index == -1)
     {
-        sead::FixedSafeString<40> str;
-        str = "\x1b[33m";
-        str.append(capture);
-        str.append(" not in captures list.\x1b[0m");
-        appendMessage(str.cstr());
+        appendMessage("\x1b[33m%s not in captures list.\x1b[0m", capture);
         return false;
     }
 
@@ -2063,11 +2059,7 @@ bool Client::hasCaptureCheck(const char* capture) {
 
     int index = getIndexCaptureList(capture);
     if (index == -1) {
-        sead::FixedSafeString<40> str;
-        str = "\x1b[33m";
-        str.append(capture);
-        str.append(" not in captures list.\x1b[0m");
-        appendMessage(str.cstr());
+        appendMessage("\x1b[33m%s not in captures list.\x1b[0m", capture);
         return false;
     }
 
@@ -2103,24 +2095,29 @@ void Client::startShineChipCount() {
     sInstance->mCurStageScene->mSceneLayout->updateCounterParts();  // updates shine chip layout to (maybe) prevent softlocks
 }
 
-void Client::appendMessage(const char* msg)
+void Client::appendMessage(const char* format, ...)
 {
     if (!sInstance) {
         Logger::log("Static Instance is Null!\n");
         return;
     }
 
-    if (strlen(msg) <= 0)
-    {
+    if (strlen(format) <= 0)
         return;
-    }
 
     if (sInstance->apChatLineCount >= 5)
     {
         shiftMessages();
     }
 
-    sInstance->apChatLines[sInstance->apChatLineCount] = msg;
+    va_list arg;
+
+    va_start(arg, format);
+    sead::FixedSafeString<0x200> message(format);
+    message.formatV(format, arg);
+    va_end(arg);
+
+    sInstance->apChatLines[sInstance->apChatLineCount] = message.cstr();
     sInstance->apChatLineCount++;
 }
 

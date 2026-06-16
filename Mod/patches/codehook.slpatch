@@ -10,7 +10,7 @@ B59E28 B seadPrintHook // sead::system::print
 // Debug Stuff
 5359DC:
     MOV X0, X19 // move GameSystem to arg register
-    BL setupDebugMenu
+    BL hookGameSystemInit
 
 50F258: // HakoniwaSequence::drawMain+80
     MOV X0, X19 // HakoniwaSequence
