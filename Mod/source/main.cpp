@@ -712,15 +712,6 @@ bool hakoniwaSequenceHook(HakoniwaSequence* sequence) {
     return isFirstStep;
 }
 
-void seadPrintHook(const char *fmt, ...)
-{
-    va_list args;
-	va_start(args, fmt);
-
-    Logger::log(fmt, args);
-    va_end(args);
-}
-
 void setAPNerve(StageSceneStatePauseMenu *menu) {
     MenuSelectParts *selectParts = menu->mSelectParts;
     int TitleIndices[] = {0, 1, 2, 3, 5, 6};
