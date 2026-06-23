@@ -23,7 +23,7 @@ WARNING: This mod only works on version 1.0.0 of Super Mario Odyssey.
 <details>
 <summary>Emulator</summary>
 
-### Ryujinx (Cannot Send Checks)
+### Ryujinx (Not well tested, may be unstable)
 - Extract `SMO_Archipelago_Vx.x_Emu.zip` and Place `SMOAP` folder in the mods directory for Super Mario Odyssey.
 
 ### Suyu
