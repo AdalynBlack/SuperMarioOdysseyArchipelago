@@ -604,11 +604,11 @@ def set_rules(self, options : SMOOptions) -> None:
             # Moon
             if self.options.goal > self.options.goal.option_moon:
                 set_rule(self.multiworld.get_location("Moon Kingdom - Under the Bowser Statue", self.player),
-                        lambda state: state.has("Bowser statue", self.player))
+                    lambda state: state.has("Bowser statue", self.player))
                 set_rule(self.multiworld.get_location("Moon Kingdom - In a Hole in the Magma", self.player),
-                         lambda state: state.has("Parabones", self.player))
+                     lambda state: state.has("Parabones", self.player))
                 set_rule(self.multiworld.get_location("Moon Kingdom - Around the Barrier Wall", self.player),
-                         lambda state: state.has("Banzai Bill", self.player))
+                     lambda state: state.has("Banzai Bill", self.player))
                 set_rule(self.multiworld.get_location("Moon Kingdom - Fly to the Treasure Chest and Back", self.player),
                      lambda state: state.has("Banzai Bill", self.player))
 

@@ -529,6 +529,7 @@ def create_regions(self, world, player):
         regMoon.connect(regPostMoon)
 
 
+    regIntro.connect(regCascade, "Menu")
     regCascadePeace.connect(regSand, "Sand Enter", lambda state: count_moons(self, state, "Cascade", player) >= self.moon_counts["cascade"])
     regSandPyramid.connect(regSandUnderground, "Sand Story Subarea")
 
