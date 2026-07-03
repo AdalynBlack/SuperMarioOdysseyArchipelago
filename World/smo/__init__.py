@@ -135,7 +135,7 @@ class SMOWorld(World):
         "wooded": 53,
         "lost": 20,
         "metro": 57,
-        "snow": 35 - 3, # Normally 35, but we've removed 3 moons because Bound Bowl crashes the game
+        "snow": 35,
         "seaside": 51,
         "luncheon": 53,
         "ruined": 6,
@@ -153,7 +153,7 @@ class SMOWorld(World):
         "cloud": 9,
         "lost": 35,
         "metro": 85,
-        "snow": 57 - 3 - 1 - 1 - 1, # Normally 57, but we've removed 6 moons because Bound Bowl crashes the game
+        "snow": 57,
         "seaside": 73,
         "luncheon": 72,
         "ruined": 12,
