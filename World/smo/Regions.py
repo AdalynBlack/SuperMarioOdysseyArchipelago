@@ -506,6 +506,7 @@ def create_regions(self, world, player):
         regMoon.connect(regPostMoon, "Post Moon", lambda state: state.has("Bowser", player))
 
     else:
+        regIntro.connect(regCascade, "Menu")
         regCascade.connect(regCascadePeace)
         regSandUnderground.connect(regSandPeace, "Sand World Peace")
         regSand.connect(regSandPyramid, "Sand Pyramid Access")
@@ -529,7 +530,6 @@ def create_regions(self, world, player):
         regMoon.connect(regPostMoon)
 
 
-    regIntro.connect(regCascade, "Menu")
     regCascadePeace.connect(regSand, "Sand Enter", lambda state: count_moons(self, state, "Cascade", player) >= self.moon_counts["cascade"])
     regSandPyramid.connect(regSandUnderground, "Sand Story Subarea")
 
