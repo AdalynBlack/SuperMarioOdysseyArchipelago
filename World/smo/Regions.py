@@ -5,7 +5,7 @@ from .Options import SMOOptions
 from .Locations import SMOLocation, loc_Cap, loc_Cascade, loc_Cascade_Revisit, \
     loc_Sand, loc_Lake, loc_Wooded, loc_Cloud, loc_Lost, loc_Lost_Revisit, loc_Metro, \
     loc_Snow, loc_Seaside, loc_Luncheon, loc_Ruined, loc_Bowser, loc_Moon, \
-    locations_table, post_game_locations_table, loc_Dark, loc_Darker, special_locations_table, \
+    locations_table, post_game_locations_table, loc_Doctor_Outfit_Moon, loc_Dark, loc_Darker, special_locations_table, \
     loc_Cap_Shop, loc_Cascade_Shop, loc_Sand_Shop, loc_Lake_Shop, loc_Wooded_Shop, \
     loc_Lost_Shop, loc_Metro_Shop, loc_Snow_Shop, loc_Seaside_Shop, loc_Luncheon_Shop, \
     loc_Bowser_Shop, loc_Moon_Shop, loc_Mushroom_Shop, loc_Dark_Outfit, loc_Darker_Outfit, \
@@ -246,7 +246,13 @@ def create_regions(self, world, player):
     # Post Game
     regPostGame = Region("Post Game", player, world, "Post Game Moons")
     if self.options.goal > self.options.goal.option_moon:
-        create_locs(regPostGame, *post_game_locations_table.keys(), locs_table= post_game_locations_table)
+        post_game_locations_table_dup = {**post_game_locations_table}
+        goal_moons = self.moon_counts["dark"] if self.options.goal.option_dark else self.moon_counts["darker"]
+    
+        if self.outfit_moon_counts["Doctor Outfit"] < goal_moons:
+            post_game_locations_table_dup = {**post_game_locations_table, **loc_Doctor_Outfit_Moon}
+
+        create_locs(regPostGame, *post_game_locations_table_dup.keys(), locs_table= post_game_locations_table_dup)
     world.regions.append(regPostGame)
 
     # Dark Side

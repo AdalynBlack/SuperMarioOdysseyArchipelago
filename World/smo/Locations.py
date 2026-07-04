@@ -1641,7 +1641,6 @@ loc_Moon_Postgame = {
     "Moon Kingdom - Shopping in Honeylune Ridge": 1157,
     "Moon Kingdom - Walking on the Moon!": 578,
     "Moon Kingdom - Moon Kingdom Regular Cup": 707,
-    "Moon Kingdom - Doctor in the House": 1164,
     "Moon Kingdom - Sphynx's Hidden Vault": 599,
     "Moon Kingdom - A Tourist in the Moon Kingdom": 911,
     "Moon Kingdom - Peach in the Moon Kingdom": 581,
@@ -1657,6 +1656,10 @@ loc_Moon_Postgame = {
     "Moon Kingdom - Edge of the Galaxy": 604,
     "Moon Kingdom - Navigating Giant Swings": 601,
     "Moon Kingdom - A Swing on Top of a Swing": 602
+}
+
+loc_Doctor_Outfit_Moon = {
+    "Moon Kingdom - Doctor in the House": 1164,
 }
 
 sub_area_galaxy = {
@@ -2034,7 +2037,8 @@ locations_table = {
     **shop_locations_table,
     **loc_Post_Cloud,
     **loc_Moon_Post_Moon,
-    **loc_Captures
+    **loc_Captures,
+    **loc_Doctor_Outfit_Moon
 }
 
 locations_list = [

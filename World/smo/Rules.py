@@ -109,8 +109,6 @@ def set_rules(self, options : SMOOptions) -> None:
                  lambda state: state.has("Cowboy Hat", self.player) and state.has("Cowboy Outfit", self.player))
         set_rule(self.multiworld.get_location("Luncheon Kingdom - Mechanic: Repairs Complete!", self.player),
                  lambda state: state.has("Mechanic Cap", self.player) and state.has("Mechanic Outfit", self.player))
-        set_rule(self.multiworld.get_location("Moon Kingdom - Doctor in the House", self.player),
-                 lambda state: state.has("Doctor Headwear", self.player) and state.has("Doctor Outfit", self.player))
         set_rule(self.multiworld.get_location("Mushroom Kingdom - Totally Classic", self.player),
                  lambda state: (state.has("Mario 64 Cap", self.player) and state.has("Mario 64 Suit", self.player)) or (
                              state.has("Metal Mario Cap", self.player) and state.has("Metal Mario Clothes", self.player)))
@@ -119,6 +117,13 @@ def set_rules(self, options : SMOOptions) -> None:
                              state.has("Metal Mario Cap", self.player) and state.has("Metal Mario Clothes", self.player)))
         set_rule(self.multiworld.get_location("Metro Kingdom - Surprise Clown!", self.player),
                  lambda state: state.has("Clown Hat", self.player) and state.has("Clown Suit", self.player))
+
+        goal_moons = self.moon_counts["dark"] if self.options.goal.option_dark else self.moon_counts["darker"]
+        print(f"Rules Goal Moons: {goal_moons}")
+    
+        if self.outfit_moon_counts["Doctor Outfit"] < goal_moons:
+            set_rule(self.multiworld.get_location("Moon Kingdom - Doctor in the House", self.player),
+                     lambda state: state.has("Doctor Headwear", self.player) and state.has("Doctor Outfit", self.player))
 
     # if options.goal > 15 or (options.shops != 0 and options.shops != 3):
     if options.shop_sanity != 'off':
