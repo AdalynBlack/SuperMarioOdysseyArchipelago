@@ -636,11 +636,9 @@ class SMOWorld(World):
                 pool.remove(item)
 
         if len(pool) < len(list(self.multiworld.get_unfilled_locations(self.player))):
-            print("Too few coins, adding more...")
             while len(pool) < len(list(self.multiworld.get_unfilled_locations(self.player))):
                 pool.append("Coins")
         else:
-            print("Too many coins, removing some...")
             while len(pool) > len(list(self.multiworld.get_unfilled_locations(self.player))):
                 pool.remove("Coins")
 
