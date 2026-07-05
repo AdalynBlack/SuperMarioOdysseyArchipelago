@@ -518,16 +518,18 @@ class SMOWorld(World):
             kingdoms : list = list(range(15))
             while sum(revised_counts[0:15]) < self.moon_counts["dark"]:
                 index = kingdoms[random.randint(0, len(kingdoms) - 1)]
-                revised_counts[index] += 1
-                if revised_counts[index] == self.max_checks[world_list[index].lower()]:
+                if revised_counts[index] >= self.max_checks[world_list[index].lower()]:
                     kingdoms.remove(index)
+                else:
+                    revised_counts[index] += 1
         elif self.options.goal == self.options.goal.option_darker:
             kingdoms: list = list(range(16))
             while sum(revised_counts[0:16]) < self.moon_counts["darker"]:
                 index = kingdoms[random.randint(0, len(kingdoms) - 1)]
-                revised_counts[index] += 1
-                if revised_counts[index] == self.max_checks[world_list[index].lower()]:
+                if revised_counts[index] >= self.max_checks[world_list[index].lower()]:
                     kingdoms.remove(index)
+                else:
+                    revised_counts[index] += 1
 
         for location in locations:
             # found : bool = False
