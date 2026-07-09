@@ -77,9 +77,13 @@ def create_regions(self, world, player):
                 world: The MultiWorld instance.
                 player: The index of this player in the multiworld.
     """
+    
+    # Menu
+    regMenu = Region("Menu", player, world, "Menu")
+    world.regions.append(regMenu)
 
     # Intro Region
-    regIntro = Region("Menu", player, world, "Intro Sequence")
+    regIntro = Region("Cap/Cascade Intro", player, world, "Cap/Cascade Intro")
     world.regions.append(regIntro)
 
     # Cascade Regions
@@ -409,6 +413,7 @@ def create_regions(self, world, player):
     regMoonCaveCaptures = Region("Moon Cave Captures", player, world, "Captures")
     regMushroomCaptures = Region("Mushroom Captures", player, world, "Captures")
 
+    regMenu.connect(regIntro, "Menu")
     if self.options.capture_sanity.value == self.options.capture_sanity.option_true:
         create_locs(regIntroCaptures, *loc_Intro_Captures)
         create_locs(regCapRevisitCaptures, *loc_Cap_Captures_Revisit)
@@ -471,7 +476,7 @@ def create_regions(self, world, player):
         world.regions.append(regMetroPostGameCaptures)
 
     # Progression Connections
-        regIntro.connect(regCascade, "Menu",
+        regIntro.connect(regCascade, "Collect First Moon",
                          lambda state: (state.has("Frog", self.player) and
                          state.has("Chain Chomp", self.player)) or
                          state.has("Glitch Logic", self.player))
@@ -512,7 +517,7 @@ def create_regions(self, world, player):
         regMoon.connect(regPostMoon, "Post Moon", lambda state: state.has("Bowser", player))
 
     else:
-        regIntro.connect(regCascade, "Menu")
+        regIntro.connect(regCascade, "Collect First Moon")
         regCascade.connect(regCascadePeace)
         regSandUnderground.connect(regSandPeace, "Sand World Peace")
         regSand.connect(regSandPyramid, "Sand Pyramid Access")
