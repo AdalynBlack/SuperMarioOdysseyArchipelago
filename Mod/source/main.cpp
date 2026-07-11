@@ -56,6 +56,8 @@ static int messageShiftTimer = 0;
 
 void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool isYukimaru) {
     GameDataHolderAccessor holder = stageScene->mHolder;
+
+    holder.mData->mGameDataFile->mBossSaveData->mIsAlreadyDeadGKLv1[0] = Client::getScenario(0) > 1;
     if (pInfSendTimer >= 5) {
 
         Client::sendPlayerInfPacket(playerBase, isYukimaru);
@@ -94,8 +96,6 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
                 }
             }
         }
-
-        holder.mData->mGameDataFile->mBossSaveData->mIsAlreadyDeadGKLv1[0] = Client::getScenario(0) > 1;
 
         if (!(al::isEqualString(GameDataFunction::tryGetCurrentMainStageName(holder),
                               "CapWorldHomeStage") &&
