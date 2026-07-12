@@ -117,7 +117,7 @@ def set_rules(self, options : SMOOptions) -> None:
         set_rule(self.multiworld.get_location("Metro Kingdom - Surprise Clown!", self.player),
                  lambda state: state.has("Clown Hat", self.player) and state.has("Clown Suit", self.player))
 
-        goal_moons = self.moon_counts["dark"] if self.options.goal.option_dark else self.moon_counts["darker"]
+        goal_moons = self.moon_counts["dark"] if self.options.goal == 'dark' else self.moon_counts["darker"]
     
         if self.outfit_moon_counts["Doctor Outfit"] < goal_moons:
             set_rule(self.multiworld.get_location("Moon Kingdom - Doctor in the House", self.player),

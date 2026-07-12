@@ -251,7 +251,7 @@ def create_regions(self, world, player):
     regPostGame = Region("Post Game", player, world, "Post Game Moons")
     if self.options.goal > self.options.goal.option_moon:
         post_game_locations_table_dup = {**post_game_locations_table}
-        goal_moons = self.moon_counts["dark"] if self.options.goal.option_dark else self.moon_counts["darker"]
+        goal_moons = self.moon_counts["dark"] if self.options.goal == self.options.goal.option_dark else self.moon_counts["darker"]
     
         if self.outfit_moon_counts["Doctor Outfit"] < goal_moons:
             post_game_locations_table_dup = {**post_game_locations_table, **loc_Doctor_Outfit_Moon}
