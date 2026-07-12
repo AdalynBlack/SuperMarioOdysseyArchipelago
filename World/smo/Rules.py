@@ -137,6 +137,8 @@ def set_rules(self, options : SMOOptions) -> None:
         if self.options.goal > self.options.goal.option_metro:
             set_rule(self.multiworld.get_location("Metro Kingdom - Rewiring the Neighborhood", self.player),
                      lambda state: state.has("Builder Helmet", self.player) and state.has("Builder Outfit", self.player))
+            set_rule(self.multiworld.get_location("Metro Kingdom - Off the Beaten Wire", self.player),
+                     lambda state: state.has("Builder Helmet", self.player) and state.has("Builder Outfit", self.player))
             set_rule(self.multiworld.get_location("Seaside Kingdom - A Relaxing Dance", self.player),
                      lambda state: state.has("Resort Hat", self.player) and state.has("Resort Outfit", self.player))
             set_rule(self.multiworld.get_location("Snow Kingdom - Moon Shards in the Cold Room", self.player),
@@ -483,10 +485,17 @@ def set_rules(self, options : SMOOptions) -> None:
                      lambda state: state.has("RC Car", self.player))
             set_rule(self.multiworld.get_location("Metro Kingdom - RC Car Pro!", self.player),
                      lambda state: state.has("RC Car", self.player))
-            set_rule(self.multiworld.get_location("Metro Kingdom - Rewiring the Neighborhood", self.player),
-                     lambda state: state.has("Spark Pylon", self.player))
-            set_rule(self.multiworld.get_location("Metro Kingdom - Off the Beaten Wire", self.player),
-                     lambda state: state.has("Spark Pylon", self.player))
+
+            if self.options.shop_sanity != 'off':
+                set_rule(self.multiworld.get_location("Metro Kingdom - Rewiring the Neighborhood", self.player),
+                         lambda state: state.has("Spark Pylon", self.player) and state.has("Builder Helmet", self.player) and state.has("Builder Outfit", self.player))
+                set_rule(self.multiworld.get_location("Metro Kingdom - Off the Beaten Wire", self.player),
+                         lambda state: state.has("Spark Pylon", self.player) and state.has("Builder Helmet", self.player) and state.has("Builder Outfit", self.player))
+            else:
+                set_rule(self.multiworld.get_location("Metro Kingdom - Rewiring the Neighborhood", self.player),
+                         lambda state: state.has("Spark Pylon", self.player))
+                set_rule(self.multiworld.get_location("Metro Kingdom - Off the Beaten Wire", self.player),
+                         lambda state: state.has("Spark Pylon", self.player))
             # Change when entrance rando implemented
             set_rule(self.multiworld.get_location("Metro Kingdom - Moon Shards Under Siege", self.player),
                      lambda state: state.has("Taxi", self.player) and state.has("Sherm", self.player))
