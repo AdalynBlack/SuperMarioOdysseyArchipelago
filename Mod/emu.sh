@@ -9,5 +9,5 @@ cp -r ./atmosphere/exefs_patches/StarlightBase/* ./SMOAP/exefs/
 set VERSION $(git describe --tags --abbrev)
 echo $VERSION > ./SMOAP/SMOAP_VERSION
 
-rm SMO_Archipelago_*_Emu.zip
+rm -f SMO_Archipelago_*_Emu.zip
 zip -r SMO_Archipelago_{$VERSION}_Emu.zip ./SMOAP/
