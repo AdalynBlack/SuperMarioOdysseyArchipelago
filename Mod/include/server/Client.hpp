@@ -408,7 +408,5 @@ class Client {
 
         PuppetInfo mDebugPuppetInfo;
 
-        int mTimeSinceLastPing = 0;
-
         bool hasStarted = false;
 };

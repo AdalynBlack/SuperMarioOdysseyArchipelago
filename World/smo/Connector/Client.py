@@ -179,10 +179,6 @@ class SMOContext(SuperContext):
     async def disconnect(self, allow_autoreconnect: bool = False):
         await super().disconnect(allow_autoreconnect)
 
-    def disconnect_proxy(self):
-        if self.endpoint and self.endpoint.socket:
-            self.endpoint.socket.shutdown(2)
-
     def is_connected(self) -> bool:
         return self.server and self.server.socket.open
 
@@ -534,7 +530,6 @@ async def ping_loop(ctx : SMOContext):
         if ctx.endpoint:
             if ctx.disconnect_timer == 0:
                 ctx.game_connected = False
-                ctx.disconnect_proxy()
             elif ctx.disconnect_timer == -5:
                 ctx.ui.print_json([{"type": "color", "color": "red", "text": "Client Disconnected"}])
             if ctx.disconnect_timer > -50:

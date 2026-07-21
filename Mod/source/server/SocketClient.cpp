@@ -563,7 +563,8 @@ bool SocketClient::trySendQueue() {
 
     bool successful = send(curPacket);
 
-    mHeap->free(curPacket);
+    if (curPacket)
+        mHeap->free(curPacket);
 
     return successful;
 }
