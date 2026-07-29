@@ -312,9 +312,14 @@ def set_rules(self, options : SMOOptions) -> None:
         if self.options.goal > self.options.goal.option_metro:
             # Seaside Story
             set_rule(self.multiworld.get_location("Seaside Kingdom - The Hot Spring Seal", self.player),
-                     lambda state: state.has("Gushen", self.player))
+                     lambda state: state.has("Gushen", self.player) or (state.has("Cheep Cheep", self.player) and state.has("Glitch Logic", self.player)))
+            set_rule(self.multiworld.get_location("Seaside Kingdom - The Stone Pillar Seal", self.player),
+                     lambda state: state.has("Gushen", self.player) or state.has("Glitch Logic", self.player))
+            set_rule(self.multiworld.get_location("Seaside Kingdom - The Lighthouse Seal", self.player),
+                     lambda state: state.has("Gushen", self.player) or state.has("Cheep Cheep", self.player) or state.has("Glitch Logic", self.player))
             set_rule(self.multiworld.get_location("Seaside Kingdom - The Glass Is Half Full!", self.player),
                      lambda state: state.has("Gushen", self.player))
+
             # Snow Story
             self.multiworld.get_location("Snow Kingdom - The Bound Bowl Grand Prix", self.player).progress_type = LocationProgressType.EXCLUDED
             set_rule(self.multiworld.get_location("Snow Kingdom - The Bound Bowl Grand Prix", self.player),
