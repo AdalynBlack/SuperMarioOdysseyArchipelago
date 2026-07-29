@@ -544,12 +544,12 @@ void Client::sendPlayerInfPacket(const PlayerActorBase *playerBase, bool isYukim
         packet->subActName = PlayerAnims::Type::Unknown;
     }
     
-    if(sInstance->lastPlayerInfPacket != *packet) {
+    //if(sInstance->lastPlayerInfPacket != *packet) {
         sInstance->lastPlayerInfPacket = *packet; // deref packet and store in client memory
         sInstance->mSocket->queuePacket(packet);
-    } else {
-        sInstance->mHeap->free(packet); // free packet if we're not using it
-    }
+    //} else {
+    //    sInstance->mHeap->free(packet); // free packet if we're not using it
+    //}
 }
 
 /**
