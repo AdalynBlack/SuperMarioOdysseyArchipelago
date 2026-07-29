@@ -1,10 +1,17 @@
 #!/usr/bin/fish
 
-cd ./starlight_patch_100/
+set -x ISEMU 1
 
-cp -r ./atmosphere/contents/0100000000010000/romfs/* ./SMOAP/romfs/
-cp -r ./atmosphere/contents/0100000000010000/exefs/* ./SMOAP/exefs/
-cp -r ./atmosphere/exefs_patches/StarlightBase/* ./SMOAP/exefs/
+# Remove files that change with ISEMU
+rm ./build100/StageSceneStateServerConfig.* ./build100/Socket* ./build100/logger.*
+
+./docker-build.sh; or return
+
+cd ./starlight_patch_100/; or return
+
+cp -r ./atmosphere/contents/0100000000010000/romfs/* ./SMOAP/romfs/; or return
+cp -r ./atmosphere/contents/0100000000010000/exefs/* ./SMOAP/exefs/; or return
+cp -r ./atmosphere/exefs_patches/StarlightBase/* ./SMOAP/exefs/; or return
 
 set VERSION $(git describe --tags --abbrev)
 echo $VERSION > ./SMOAP/SMOAP_VERSION
