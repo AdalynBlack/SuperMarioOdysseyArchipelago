@@ -531,7 +531,7 @@ async def ping_loop(ctx : SMOContext):
             if ctx.disconnect_timer == 0:
                 ctx.game_connected = False
             elif ctx.disconnect_timer == -5:
-                ctx.ui.print_json([{"type": "color", "color": "red", "text": "Client Disconnected"}])
+                ctx.ui.print_json([{"type": "color", "color": "orange", "text": "Client Inactive for 15 Seconds (In a cutscene?)"}])
             if ctx.disconnect_timer > -50:
                 ctx.disconnect_timer -= 1
         if ctx.death_link_pause_timer > 0:
@@ -714,11 +714,12 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
                 #await asyncio.sleep(0.25)
 
             if not ctx.game_connected and not ctx.awaiting_connection:
-                print("Invalid connection state, not sending more packets")
+                ctx.awaiting_connection = True
+                self.ctx.print_json([{"type": "color", "color": "red", "text": "Invalid connection state, not sending more packets"}])
                 break
     except Exception as e:
-        print("Connection Error ", e)
-        traceback.print_exc()
+        self.ctx.print_json([{"type": "color", "color": "red", "text": f"Connection Error {e}"}])
+        self.ctx.print_json([{"type": "color", "color": "red", "text": traceback.format_exc()}])
         ctx.player_data.item_index = 0
         ctx.player_data.current_home_stage = ""
         ctx.awaiting_connection = True
