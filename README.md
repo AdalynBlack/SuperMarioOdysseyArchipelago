@@ -1,6 +1,8 @@
 # Super Mario Odyssey - Archipelago Mod
 A mod adding Archipelago Multi World support to Super Mario Odyssey.
-WARNING: This mod only works on version 1.0.0 of Super Mario Odyssey.
+
+> [!WARNING]
+> This mod only works on version 1.0.0 of Super Mario Odyssey! Please downgrade your game before installing the mod!
 
 ## Features
 - Randomize Power Moons
