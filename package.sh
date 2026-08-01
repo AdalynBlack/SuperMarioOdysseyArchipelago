@@ -16,6 +16,7 @@ cp ./Mod/starlight_patch_100/SMO_Archipelago_*.zip ./
 
 # Zip the world
 cd ./World
+rm -r smo/__pycache__
 zip -r ../smo.apworld ./smo
 
 # Return to root
