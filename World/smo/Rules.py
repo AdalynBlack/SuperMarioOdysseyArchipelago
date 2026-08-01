@@ -445,12 +445,21 @@ def set_rules(self, options : SMOOptions) -> None:
                      lambda state: state.has("Coin Coffer", self.player) or state.has("Sherm", self.player))
             set_rule(self.multiworld.get_location("Wooded Kingdom - Stretching Your Legs", self.player),
                      lambda state: state.has("Uproot", self.player))
-            # Add vine sub area uproot req if trick jump not possible
-            # Change when entrance rando implemented
+
+            # Wooded Peace
+            set_rule(self.multiworld.get_location("Wooded Kingdom - Hey Out There, Captain Toad!", self.player),
+                     lambda state: state.has("Glydon", self.player) or state.has("Glitch Logic", self.player))
+
             set_rule(self.multiworld.get_location("Wooded Kingdom - Wandering in the Fog", self.player),
-                     lambda state: state.has("Paragoomba", self.player) and state.has("Mini Rocket", self.player))
+                     lambda state: state.has("Mini Rocket", self.player) and (state.has("Paragoomba", self.player) or state.has("Glitch Logic")))
             set_rule(self.multiworld.get_location("Wooded Kingdom - Nut Hidden in the Fog", self.player),
                      lambda state: state.has("Mini Rocket", self.player))
+
+            set_rule(self.multiworld.get_location("Wooded Kingdom - Walking on Clouds", self.player),
+                     lambda state: state.has("Uproot", self.player) or state.has("Glitch Logic", self.player))
+            set_rule(self.multiworld.get_location("Wooded Kingdom - Above the Clouds", self.player),
+                     lambda state: state.has("Uproot", self.player) or state.has("Glitch Logic", self.player))
+
             if self.options.shop_sanity != 'off':
                 set_rule(self.multiworld.get_location("Steam Gardener Watering Can", self.player),
                          lambda state: state.has("Boulder", self.player) and state.has("Uproot", self.player) and state.has("Sherm", self.player))
