@@ -2,8 +2,8 @@
 set -e
 
 # Remove old release
-rm ./SMO_Archipelago_*.zip
-rm ./smo.apworld
+rm -v ./SMO_Archipelago_*.zip 2> /dev/null || true
+rm -v ./smo.apworld 2> /dev/null || true
 
 # Build both mod releases
 cd ./Mod
@@ -16,7 +16,7 @@ cp ./Mod/starlight_patch_100/SMO_Archipelago_*.zip ./
 
 # Zip the world
 cd ./World
-rm -r smo/__pycache__
+rm -rv smo/__pycache__ 2> /dev/null || true
 zip -r ../smo.apworld ./smo
 
 # Return to root
