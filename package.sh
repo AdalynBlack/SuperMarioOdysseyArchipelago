@@ -14,10 +14,14 @@ cd ./Mod
 cd ..
 cp ./Mod/starlight_patch_100/SMO_Archipelago_*.zip ./
 
+VERSION=$(git describe --tags --no-abbrev)
+
 # Zip the world
+jq -S ".world_version = \"${VERSION:1}\"" archipelago.json > ./World/smo/archipelago.json
 cd ./World
 rm -rv smo/__pycache__ 2> /dev/null || true
 zip -r ../smo.apworld ./smo
+rm smo/archipelago.json
 
 # Return to root
 cd ..
