@@ -298,9 +298,9 @@ def set_rules(self, options : SMOOptions) -> None:
         if self.options.goal > self.options.goal.option_lake:
             # Wooded Story
             set_rule(self.multiworld.get_location("Wooded Kingdom - Road to Sky Garden", self.player),
-                     lambda state: state.has("Uproot", self.player) or state.has("Glitch Logic"))
+                     lambda state: state.has("Uproot", self.player) or state.has("Glitch Logic", self.player))
             set_rule(self.multiworld.get_location("Wooded Kingdom - Path to the Secret Flower Field", self.player),
-                     lambda state: state.has("Sherm", self.player) or state.has("Glitch Logic"))
+                     lambda state: state.has("Sherm", self.player) or state.has("Glitch Logic", self.player))
             set_rule(self.multiworld.get_location("Wooded Kingdom - Defend the Secret Flower Field!", self.player),
                      lambda state: state.has("Uproot", self.player) and state.has("Sherm", self.player))
 
