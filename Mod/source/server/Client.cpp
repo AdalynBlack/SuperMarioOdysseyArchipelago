@@ -605,7 +605,6 @@ void Client::sendHackCapInfPacket(const HackCap* hackCap) {
  * @param holder 
  */
 void Client::sendGameInfPacket(const PlayerActorHakoniwa* player, GameDataHolderAccessor holder) {
-
     if (!sInstance) {
         Logger::log("Static Instance is Null!\n");
         return;
@@ -1061,20 +1060,22 @@ void Client::updateTagInfo(TagInf *packet) {
  * @param packet 
  */
 void Client::sendToStage(ChangeStagePacket* packet) {
-    if (mSceneInfo && mSceneInfo->mSceneObjHolder) {
+    if (!mSceneInfo)
+        return;
+    if (!mSceneInfo->mSceneObjHolder)
+        return ;
 
-        GameDataHolderAccessor accessor(mSceneInfo->mSceneObjHolder);
+    GameDataHolderAccessor accessor(mSceneInfo->mSceneObjHolder);
 
-        if (packet->scenarioNo > 0) {
-            setScenario(accessor.mData->mWorldList->tryFindWorldIndexByStageName(packet->changeStage), packet->scenarioNo);
-        }
-
-        Logger::log("Sending Player to %s at Entrance %s in Scenario %d\n", packet->changeStage,
-                     packet->changeID, packet->scenarioNo);
-        
-        ChangeStageInfo info(accessor.mData, packet->changeID, packet->changeStage, false, packet->scenarioNo, static_cast<ChangeStageInfo::SubScenarioType>(packet->subScenarioType));
-        GameDataFunction::tryChangeNextStage(accessor, &info);
+    if (packet->scenarioNo > 0) {
+        setScenario(accessor.mData->mWorldList->tryFindWorldIndexByStageName(packet->changeStage), packet->scenarioNo);
     }
+
+    Logger::log("Sending Player to %s at Entrance %s in Scenario %d\n", packet->changeStage,
+                 packet->changeID, packet->scenarioNo);
+    
+    ChangeStageInfo info(accessor.mData, packet->changeID, packet->changeStage, false, packet->scenarioNo, static_cast<ChangeStageInfo::SubScenarioType>(packet->subScenarioType));
+    GameDataFunction::tryChangeNextStage(accessor, &info);
 }
 /**
  * @brief 
@@ -1194,42 +1195,46 @@ PuppetInfo* Client::findPuppetInfo(const nn::account::Uid& id, bool isFindAvaila
  * @param holder 
  */
 void Client::setStageInfo(GameDataHolderAccessor holder) {
-    if (sInstance) {
+    if (!sInstance)
+        return;
 
-        sInstance->mStageName = GameDataFunction::getCurrentStageName(holder);
-        sInstance->mScenario = holder.mData->mGameDataFile->getScenarioNo(); //holder.mData->mGameDataFile->getMainScenarioNoCurrent();
-        
-        sInstance->mPuppetHolder->setStageInfo(sInstance->mStageName.cstr(), sInstance->mScenario);
-    }
+    sInstance->mStageName = GameDataFunction::getCurrentStageName(holder);
+    sInstance->mScenario = holder.mData->mGameDataFile->getScenarioNo(); //holder.mData->mGameDataFile->getMainScenarioNoCurrent();
+    
+    sInstance->mPuppetHolder->setStageInfo(sInstance->mStageName.cstr(), sInstance->mScenario);
 }
 
 void Client::sendStage(GameDataHolderWriter writer, const ChangeStageInfo* stageInfo) {
-    if (sInstance)
-    {
-        GameDataHolderAccessor accessor(sInstance->mCurStageScene);
+    if (!sInstance) {
+        Logger::log("Static Instance is Null!\n");
+        return;
+    }
+    if (!sInstance->mCurStageScene)
+        return;
 
-        setScenario(stageInfo->changeStageName.cstr(), stageInfo->scenarioNo);
-        //setMessage(1, "onGrandShineStageChange");
-        //setMessage(2, stageInfo->changeStageName.cstr());
+    GameDataHolderAccessor accessor(sInstance->mCurStageScene);
 
-        if (GameDataFunction::getWorldIndexWaterfall() ==
-            GameDataFunction::getCurrentWorldId(accessor)
-                 || GameDataFunction::isUnlockedCurrentWorld(accessor)) {
-            GameDataFunction::tryChangeNextStage(accessor, stageInfo);
-        } else {
-            int i = 0;
-            for (i = GameDataFunction::getWorldIndexSpecial2(); i > 0; i--)
+    setScenario(stageInfo->changeStageName.cstr(), stageInfo->scenarioNo);
+    //setMessage(1, "onGrandShineStageChange");
+    //setMessage(2, stageInfo->changeStageName.cstr());
+
+    if (GameDataFunction::getWorldIndexWaterfall() ==
+        GameDataFunction::getCurrentWorldId(accessor)
+             || GameDataFunction::isUnlockedCurrentWorld(accessor)) {
+        GameDataFunction::tryChangeNextStage(accessor, stageInfo);
+    } else {
+        int i = 0;
+        for (i = GameDataFunction::getWorldIndexSpecial2(); i > 0; i--)
+        {
+            if (GameDataFunction::isUnlockedWorld(accessor, i))
             {
-                if (GameDataFunction::isUnlockedWorld(accessor, i))
-                {
-                    break;
-                }
+                break;
             }
-            ChangeStageInfo info(accessor.mData, "",
-                                 GameDataFunction::getMainStageName(accessor, i), false, -1,
-                static_cast<ChangeStageInfo::SubScenarioType>(0));
-            GameDataFunction::tryChangeNextStage(accessor, &info);
         }
+        ChangeStageInfo info(accessor.mData, "",
+                             GameDataFunction::getMainStageName(accessor, i), false, -1,
+            static_cast<ChangeStageInfo::SubScenarioType>(0));
+        GameDataFunction::tryChangeNextStage(accessor, &info);
     }
 }
 
@@ -1264,6 +1269,8 @@ bool Client::setScenario(const char* worldName, int scenario) {
         Logger::log("Static Instance is Null!\n");
         return false;
     }
+    if (!sInstance->mCurStageScene)
+        return false;
 
     GameDataHolderAccessor accessor(sInstance->mCurStageScene);
 
@@ -1294,6 +1301,8 @@ int Client::getScenario(const char* worldName)
         Logger::log("Static Instance is Null!\n");
         return -1;
     }
+    if (!sInstance->mCurStageScene)
+        return -1;
 
     GameDataHolderAccessor accessor(sInstance->mCurStageScene);
 
@@ -1323,6 +1332,8 @@ void Client::sendCorrectScenario(const ChangeStageInfo* stageInfo)
         Logger::log("Static Instance is Null!\n");
         return;
     }
+    if (!sInstance->mCurStageScene)
+        return;
 
     GameDataHolderAccessor accessor(sInstance->mCurStageScene);
     // try changing isReturn (param_4)
@@ -1393,6 +1404,8 @@ void Client::receiveCheck(Check* packet)
         Logger::log("Static Instance is Null!\n");
         return;
     }
+    if (!sInstance->mCurStageScene)
+        return;
 
     int itemType = packet->itemType;
 
@@ -2902,6 +2915,8 @@ const char* Client::getShineReplacementText()
         Logger::log("Static Instance is Null!\n");
         return "";
     }
+    if (!sInstance->mCurStageScene)
+        return "";
 
     GameDataHolderAccessor accessor(sInstance->mCurStageScene);
 
@@ -3000,6 +3015,8 @@ int Client::getShineColor(Shine* curShine)
         Logger::log("Static Instance is Null!\n");
         return 99;
     }
+    if (!sInstance->mCurStageScene)
+        return 99;
 
     GameDataHolderAccessor accessor(sInstance->mCurStageScene);
 
@@ -3316,6 +3333,8 @@ void Client::updateShines() {
         Logger::log("Client Null!\n");
         return;
     }
+    if (!sInstance->mCurStageScene)
+        return;
 
     // skip shine sync if player is in cap kingdom scenario zero (very start of the game)
     if (sInstance->mStageName == "CapWorldHomeStage" && (sInstance->mScenario == 0 || sInstance->mScenario == 1)) {
@@ -3410,6 +3429,8 @@ void Client::updateWorlds(UnlockWorld* packet)
         Logger::log("Client Null!\n");
         return;
     }
+    if (!sInstance->mCurStageScene)
+        return;
 
     GameDataHolderAccessor accessor(sInstance->mCurStageScene);
     GameDataFunction::unlockWorld(accessor, packet->worldID);
