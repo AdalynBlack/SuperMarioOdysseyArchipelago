@@ -57,9 +57,13 @@ static int messageShiftTimer = 0;
 void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool isYukimaru) {
     GameDataHolderAccessor holder = stageScene->mHolder;
 
+    // Force Cascade to Scenario 1 until Madame Broode is killed
     if (!holder.mData->mGameDataFile->mBossSaveData->mIsAlreadyDeadGKLv1[1])
         Client::setScenario(1, 1);
+
+    // Force-Enable Topper in Cap Scenario 1
     holder.mData->mGameDataFile->mBossSaveData->mIsAlreadyDeadGKLv1[0] = Client::getScenario(0) > 1;
+
     if (pInfSendTimer >= 5) {
 
         Client::sendPlayerInfPacket(playerBase, isYukimaru);
