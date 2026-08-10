@@ -36,7 +36,9 @@ A mod adding Archipelago Multi World support to Super Mario Odyssey.
 </details>
 
 ### Connecting to the Connector from Super Mario Odyssey.
-- When prompted, the `IP Address` you are connecting to is your computer's local ipv4 this is found by entering the `ipconfig` command into command prompt on Windows.
+- When prompted, the `IP Address` you are connecting to is your computer's local IP address
+    - On Switch: this is found by entering the `ipconfig` command into command prompt on Windows
+    - On Emulator: leave the IP at its default value: `127.0.0.1`
 - When prompted, the `Port` is `1027` by default which does not need to be changed.
 - To change show these menus again and change your IP and Port, hold ZL while starting the game
 
