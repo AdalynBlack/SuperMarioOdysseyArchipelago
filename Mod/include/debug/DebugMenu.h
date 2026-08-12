@@ -30,6 +30,6 @@ namespace debug {
 			static int pageIndex;
 			static int puppetIndex;
 			static bool isDisableMusic;
-			static const int maxPages = 2;
+			static const int maxPages = 3;
 	};
 }

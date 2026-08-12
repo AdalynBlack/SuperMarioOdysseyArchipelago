@@ -26,7 +26,7 @@ void DebugMenu::handleInputZR(StageScene *stageScene) {
     if (al::isPadTriggerLeft(-1)) pageIndex--;
     if (al::isPadTriggerRight(-1)) pageIndex++;
 
-    pageIndex = al::modi(pageIndex, maxPages);
+    pageIndex = ((pageIndex + maxPages) % maxPages);
 }
 
 void DebugMenu::handleInputZL(StageScene *stageScene) {
@@ -91,7 +91,6 @@ bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, bool 
 
     sead::LookAtCamera *cam = al::getLookAtCamera(sequence->curScene, 0);
     sead::Projection *projection = al::getProjectionSead(sequence->curScene, 0);
-    PlayerActorBase *playerBase = rs::getPlayerActor(sequence->curScene);
 
     PuppetActor *puppet = Client::getPuppet(puppetIndex);
     PuppetActor *debugPuppet = Client::getDebugPuppet();
@@ -149,8 +148,11 @@ bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, bool 
         }
     case 1:
         {
-            PlayerHackKeeper* hackKeeper = playerBase->getPlayerHackKeeper();
+            PlayerActorBase *playerBase = rs::getPlayerActor(sequence->curScene);
+            if (!playerBase)
+                break;
 
+            PlayerHackKeeper* hackKeeper = playerBase->getPlayerHackKeeper();
             if (!hackKeeper)
                 break;
 
@@ -171,7 +173,6 @@ bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, bool 
                                     calcRot.y, calcRot.z, calcRot.w);
             } else { 
                 PlayerActorHakoniwa *player = (PlayerActorHakoniwa*)playerBase; // its safe to assume that we're using a playeractorhakoniwa if the hack keeper isnt null
-                
                 gTextWriter->printf("Cur Action: %s\n", player->mPlayerAnimator->mAnimFrameCtrl->getActionName());
                 gTextWriter->printf("Cur Sub Action: %s\n", player->mPlayerAnimator->curSubAnim.cstr());
                 gTextWriter->printf("Is Cappy Flying? %s\n", BTOC(player->mHackCap->isFlying()));
@@ -184,6 +185,17 @@ bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, bool 
                     gTextWriter->printf("Cap Skew: %f\n", player->mHackCap->mJointKeeper->mSkew);
                 }
             }
+            break;
+        }
+    case 2:
+        {
+            auto bossSaveData = sequence->mGameDataHolder.mData->mGameDataFile->mBossSaveData;
+            gTextWriter->printf("Boss Save Data\n");
+            gTextWriter->printf("    1, 2, 3\n");
+            gTextWriter->printf("00 [%d, %d, %d]\n", bossSaveData->mIsAlreadyDeadGKLv1[0], bossSaveData->mIsAlreadyDeadGKLv2[0], bossSaveData->mIsAlreadyDeadGKLv3[0]);
+            gTextWriter->printf("01 [%d, %d, %d]\n", bossSaveData->mIsAlreadyDeadGKLv1[1], bossSaveData->mIsAlreadyDeadGKLv2[1], bossSaveData->mIsAlreadyDeadGKLv3[1]);
+            gTextWriter->printf("02 [%d, %d, %d]\n", bossSaveData->mIsAlreadyDeadGKLv1[2], bossSaveData->mIsAlreadyDeadGKLv2[2], bossSaveData->mIsAlreadyDeadGKLv3[2]);
+            gTextWriter->printf("03 [%d, %d, %d]\n", bossSaveData->mIsAlreadyDeadGKLv1[3], bossSaveData->mIsAlreadyDeadGKLv2[3], bossSaveData->mIsAlreadyDeadGKLv3[3]);
             break;
         }
     }
