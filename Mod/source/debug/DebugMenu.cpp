@@ -52,7 +52,7 @@ void DebugMenu::handleInputL(StageScene *stageScene) {
     }
 }
 
-bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, bool isInGame, int dispHeight) {
+bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, int dispHeight) {
     if (!DebugState::debugMode)
         return false;
 
@@ -82,11 +82,7 @@ bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, bool 
     gTextWriter->printf("Send Queue Count: %d/%d\n", Client::instance()->mSocket->getSendCount(), Client::instance()->mSocket->getSendMaxCount());
     gTextWriter->printf("Recv Queue Count: %d/%d\n", Client::instance()->mSocket->getRecvCount(), Client::instance()->mSocket->getRecvMaxCount());
 
-    if (!sequence)
-        return true;
     if (!sequence->curScene)
-        return true;
-    if (!isInGame)
         return true;
 
     sead::LookAtCamera *cam = al::getLookAtCamera(sequence->curScene, 0);

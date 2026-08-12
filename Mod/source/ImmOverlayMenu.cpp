@@ -13,24 +13,26 @@ void ImmOverlayMenu::init(sead::Heap *heap, agl::DrawContext *context) {
     sInstance = new ImmOverlayMenu(heap, context);
 }
 
-void ImmOverlayMenu::draw(sead::Viewport *viewport, HakoniwaSequence *HakoniwaSequence, bool isInGame) {
+void ImmOverlayMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence) {
     if (!sInstance)
         return;
+    if (!sequence)
+        return;
 
-    sInstance->drawOverlayMenu(viewport, HakoniwaSequence, isInGame);
+    sInstance->drawOverlayMenu(viewport, sequence);
 }
 
-void ImmOverlayMenu::drawOverlayMenu(sead::Viewport *viewport, HakoniwaSequence *sequence, bool isInGame) {
+void ImmOverlayMenu::drawOverlayMenu(sead::Viewport *viewport, HakoniwaSequence *sequence) {
     gTextWriter->mViewport = viewport;
     gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, 0.8f);
 
     int dispHeight = al::getLayoutDisplayHeight();
 
-    if (!debug::DebugMenu::draw(viewport, sequence, isInGame, dispHeight))
-        drawChat(viewport, sequence, isInGame, dispHeight);
+    if (!debug::DebugMenu::draw(viewport, sequence, dispHeight))
+        drawChat(viewport, sequence, dispHeight);
 }
 
-void ImmOverlayMenu::drawChat(sead::Viewport *viewport, HakoniwaSequence *sequence, bool isInGame, int dispHeight) {
+void ImmOverlayMenu::drawChat(sead::Viewport *viewport, HakoniwaSequence *sequence, int dispHeight) {
     static int messageShiftTimer = 0;
 
     if (Client::getQueueLength() == 0)

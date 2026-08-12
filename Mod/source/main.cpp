@@ -238,7 +238,8 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
 void drawMainHook(HakoniwaSequence *sequence, sead::Viewport *viewport, sead::DrawContext *drawContext) {
     Time::calcTime();  // this needs to be ran every frame, so running it here works
 
-    ImmOverlayMenu::draw(viewport, sequence, isInGame);
+    if (isInGame)
+        ImmOverlayMenu::draw(viewport, sequence);
 
     // Replicate the functionality of the original code
     // 2D Background (Main Surface)

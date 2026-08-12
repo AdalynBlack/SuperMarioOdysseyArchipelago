@@ -20,7 +20,7 @@ namespace debug {
 	class DebugMenu {
 		public:
 			static void updateInputs(StageScene*);
-			static bool draw(sead::Viewport *viewport, HakoniwaSequence *sequence, bool isInGame, int dispHeight);
+			static bool draw(sead::Viewport *viewport, HakoniwaSequence *sequence, int dispHeight);
 		private:
 			static void handleInputZR(StageScene *stageScene);
 			static void handleInputZL(StageScene *stageScene);
