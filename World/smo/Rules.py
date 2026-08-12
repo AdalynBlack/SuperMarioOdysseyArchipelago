@@ -463,6 +463,14 @@ def set_rules(self, options : SMOOptions) -> None:
                      lambda state: state.has("Uproot", self.player) or state.has("Glitch Logic", self.player))
 
             if self.options.shop_sanity != 'off':
+                set_rule(self.multiworld.get_location("Scientist Outfit", self.player),
+                         lambda state: state.has("Uproot", self.player) or state.has("Glitch Logic", self.player))
+
+                set_rule(self.multiworld.get_location("Wooded Kingdom Sticker", self.player),
+                         lambda state: state.has("Uproot", self.player) and state.has("Sherm", self.player))
+                set_rule(self.multiworld.get_location("Flowers from Steam Gardens", self.player),
+                         lambda state: state.has("Uproot", self.player) and state.has("Sherm", self.player))
+
                 set_rule(self.multiworld.get_location("Steam Gardener Watering Can", self.player),
                          lambda state: state.has("Boulder", self.player) and state.has("Uproot", self.player) and state.has("Sherm", self.player))
 
