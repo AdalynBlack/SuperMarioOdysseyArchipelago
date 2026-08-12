@@ -58,8 +58,10 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
     GameDataHolderAccessor holder = stageScene->mHolder;
 
     // Force Cascade to Scenario 1 until Madame Broode is killed
-    if (!holder.mData->mGameDataFile->mBossSaveData->mIsAlreadyDeadGKLv1[1])
-        Client::setScenario(1, 1);
+    if (!isGotShineByHintIdx(holder, GameDataFunction::getWorldIndexWaterfall(), 1)) {
+        Client::setScenario(GameDataFunction::getWorldIndexWaterfall(), 1);
+        holder.mData->mGameDataFile->mWorldIndexArray[GameDataFunction::getWorldIndexWaterfall()] = 1;
+    }
 
     // Force-Enable Topper in Cap Scenario 1
     holder.mData->mGameDataFile->mBossSaveData->mIsAlreadyDeadGKLv1[0] = Client::getScenario(0) > 1;
@@ -652,7 +654,7 @@ void stageInitHook(al::ActorInitInfo *info, StageScene *curScene, al::PlacementI
         GameDataFunction::getWorldScenarioNo(info->mActorSceneInfo.mSceneObjHolder, worldId);
     if (worldScenario > Client::getScenario(worldId))
     {
-        Client::setScenario(worldId, worldScenario);
+        //Client::setScenario(worldId, worldScenario);
     }
 
 }

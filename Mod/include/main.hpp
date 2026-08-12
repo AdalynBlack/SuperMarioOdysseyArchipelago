@@ -71,3 +71,5 @@ constexpr const char* captureNames[] = {
     // "HackFork",
     // "Yoshi" (is a player actor)
 };
+
+bool isGotShineByHintIdx(GameDataHolderAccessor accessor, int worldId, int hintIdx);

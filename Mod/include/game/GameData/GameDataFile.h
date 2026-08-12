@@ -461,7 +461,7 @@ class GameDataFile
         u16 word7C0;
         void *qword7C8;
         u16 word7D0;
-        void *qword7D8;
+        int *mWorldIndexArray;
         sead::PtrArray<RaceRecord> mLatestRaceRecords;
         void *qword7F0;
         void *qword7F8;
