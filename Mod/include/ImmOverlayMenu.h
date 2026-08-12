@@ -27,11 +27,11 @@ class ImmOverlayMenu {
         friend class debug::DebugMenu;
 
         static void init(sead::Heap*, agl::DrawContext*);
-        static void draw(sead::Viewport*, HakoniwaSequence*, bool isInGame);
+        static void draw(sead::Viewport*, HakoniwaSequence*);
     private:
-        void drawOverlayMenu(sead::Viewport*, HakoniwaSequence*, bool isInGame);
+        void drawOverlayMenu(sead::Viewport*, HakoniwaSequence*);
 
-        void drawChat(sead::Viewport*, HakoniwaSequence*, bool isInGame, int dispHeight);
+        void drawChat(sead::Viewport*, HakoniwaSequence*, int dispHeight);
         void drawBackground(int rows);
 
         void printf_colored(const char *message);
