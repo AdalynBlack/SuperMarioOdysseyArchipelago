@@ -118,30 +118,11 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
     if (gameInfSendTimer >= 60) {
         // Check and prevent crashed home softlock
         if (GameDataFunction::isBossAttackedHome(holder)) {
-            //Client::setMessage(1, GameDataFunction::getCurrentStageName(holder));
             if (strcmp(GameDataFunction::getCurrentStageName(holder), "BossRaidWorldHomeStage") ==
                 0) {
 
                 GameDataFunction::repairHomeByCrashedBoss(holder);
                 GameDataFunction::crashHome(holder);
-                // isGotShine crashes game here for some reason
-                /*int ruinedCount = 0;
-                if (GameDataFunction::isGotShine(holder, GameDataFunction::getWorldIndexBoss(),
-                                                 0)) {
-                    ruinedCount += 3;
-                }
-
-                for (int i = 1; i < 9; i++) {
-                    if (GameDataFunction::isGotShine(holder, GameDataFunction::getWorldIndexBoss(),
-                                                     i)) {
-                        ruinedCount++;
-                    }
-                }
-                if (ruinedCount < Client::getRaidCount()) {
-                    GameDataFunction::repairHome(holder);
-                } else {
-                    GameDataFunction::bossAttackHome(holder);
-                }*/
             } else {
                 GameDataFunction::repairHome(holder); 
             }
