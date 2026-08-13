@@ -4,7 +4,7 @@ ISEMU=${1:-0}
 
 export DOCKER_BUILDKIT=1
 docker build . -t smoo-client-build
-docker run --rm         \
+docker run -t --rm         \
   -u $(id -u):$(id -g)  \
   -v "/$PWD/":/app/:Z   \
   -e ISEMU=${ISEMU}     \
