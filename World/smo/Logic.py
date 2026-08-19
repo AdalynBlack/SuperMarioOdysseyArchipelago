@@ -33,12 +33,13 @@ def total_moons(self, state: CollectionState, player: int) -> int:
             The number of total in logic power moons.
     """
     amt = 0
-    player_prog_items = state.prog_items[player]
-    for item_name in self.multiworld.worlds[player].item_names:
-        if item_name in moon_types:
-            amt += player_prog_items[item_name] if "Multi-Moon" not in item_name else player_prog_items[item_name] * 3
 
-    #print (amt)
+    for item_name in moon_types:
+        if "Multi-Moon" in item_name:
+            amt += state.count(item_name, player) * 3
+        else:
+            amt += state.count(item_name, player)
+
     return amt
 
 
