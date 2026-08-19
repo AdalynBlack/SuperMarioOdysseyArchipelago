@@ -444,8 +444,24 @@ class SMOWorld(World):
                 classification = ItemClassification.filler
             elif name in capture_items:
                 classification = ItemClassification.progression
+            elif name in moon_types and self.options.goal >= self.options.goal.option_dark:
+                classification = ItemClassification.progression # Not sure how to handle filler for dark/darker
             elif name in moon_types:
-                classification = ItemClassification.progression
+                moon_kingdom = name.split(" ")[0]
+
+                moon_kingdom_index = world_list.index(moon_kingdom)
+
+                if "Multi" in name:
+                    classification = ItemClassification.progression
+                elif "Story" in name:
+                    classification = ItemClassification.progression
+                else:
+                    if self.created_moons[moon_kingdom_index] < self.moon_counts[moon_kingdom.lower()]:
+                        classification = ItemClassification.progression
+                    else:
+                        classification = ItemClassification.filler
+
+                self.created_moons[moon_kingdom_index] += 3 if "Multi" in name else 1
 
         item: SMOItem
 
@@ -476,6 +492,26 @@ class SMOWorld(World):
                 locations += [location.name]
 
         placement_counts = [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ]
+
+        self.created_moons = [
             0,
             0,
             0,
