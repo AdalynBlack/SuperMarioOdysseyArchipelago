@@ -252,6 +252,10 @@ class Client {
 
         void removeShine(int shineId);
 
+        static int getNumStoryShines() { return sInstance ? sInstance->mStoryShineArray.size() : 0; };
+        static void registerStoryShine(Shine* shine) { if (sInstance) sInstance->mStoryShineArray.pushBack(shine); };
+        static Shine* getStoryShine(int index) { return sInstance ? sInstance->mStoryShineArray[index] : nullptr; };
+
         // public for debug purposes
         SocketClient *mSocket;
 
@@ -408,4 +412,6 @@ class Client {
         PuppetInfo mDebugPuppetInfo;
 
         bool hasStarted = false;
+
+        sead::PtrArray<Shine> mStoryShineArray;
 };

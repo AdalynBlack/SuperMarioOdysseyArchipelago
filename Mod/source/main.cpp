@@ -115,6 +115,15 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
     }
 
     if (gameInfSendTimer >= 60) {
+        if (isInGame) {
+            for (int i = 0; i < Client::getNumStoryShines(); i++) {
+                GameDataFile::HintInfo curHintInfo = holder.mData->mGameDataFile->mShineHintList[Client::getStoryShine(i)->mShineIdx];
+                if (Client::getStoryShine(i) && Client::hasShine(curHintInfo.mUniqueID) || curHintInfo.mUniqueID == 205 && Client::hasShine(shineScenarios[0].shineUid)) {
+                    Client::getStoryShine(i)->onSwitchGet();
+                }
+            }
+        }
+
         // Check and prevent crashed home softlock
         if (GameDataFunction::isBossAttackedHome(holder)) {
             if (strcmp(GameDataFunction::getCurrentStageName(holder), "BossRaidWorldHomeStage") ==
