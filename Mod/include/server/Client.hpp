@@ -311,7 +311,6 @@ class Client {
         sead::SafeArray<int, 17> worldPayCounts;
         bool regionals = false;
         bool captures = false;
-        sead::SafeArray<int, 17> worldScenarios;
         bool dying = false;
         bool apDeath = false;
         int checkIndex = -1;
