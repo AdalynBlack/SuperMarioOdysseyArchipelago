@@ -58,7 +58,6 @@ Client::Client() {
 
     apChatLineCount = 0;
     
-    worldScenarios.fill(1);
     worldPayCounts.fill(-1);
 
     collectedShines.fill(0);
@@ -1067,9 +1066,10 @@ void Client::sendToStage(ChangeStagePacket* packet) {
 
     GameDataHolderAccessor accessor(mSceneInfo->mSceneObjHolder);
 
-    if (packet->scenarioNo > 0) {
+    if (packet->scenarioNo > 0)
         setScenario(accessor.mData->mWorldList->tryFindWorldIndexByStageName(packet->changeStage), packet->scenarioNo);
-    }
+    else if (packet->scenarioNo == 0)
+        return;
 
     Logger::log("Sending Player to %s at Entrance %s in Scenario %d\n", packet->changeStage,
                  packet->changeID, packet->scenarioNo);
@@ -1260,8 +1260,7 @@ void Client::setScenario(int worldID, int scenario)
         return;
     }
 
-    sInstance->worldScenarios[worldID] = scenario;
-
+    sInstance->mHolder.mData->mGameDataFile->mWorldIndexArray[worldID] = scenario;
 }
 
 bool Client::setScenario(const char* worldName, int scenario) {
@@ -1308,12 +1307,7 @@ int Client::getScenario(const char* worldName)
 
     int worldID = accessor.mData->mWorldList->tryFindWorldIndexByStageName(worldName);
 
-    /*if (sInstance->worldScenarios[worldID] < GameDataFunction::getWorldScenarioNo(accessor, worldID))
-    {
-        setScenario(worldID, GameDataFunction::getWorldScenarioNo(accessor, worldID));
-    }*/
-    return sInstance->worldScenarios[worldID];
-
+    return sInstance->mHolder.mData->mGameDataFile->mWorldIndexArray[worldID];
 }
 
 int Client::getScenario(int worldID)
@@ -1323,7 +1317,7 @@ int Client::getScenario(int worldID)
         return -1;
     }
 
-    return sInstance->worldScenarios[worldID];
+    return sInstance->mHolder.mData->mGameDataFile->mWorldIndexArray[worldID];
 }
 
 void Client::sendCorrectScenario(const ChangeStageInfo* stageInfo)

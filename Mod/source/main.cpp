@@ -58,9 +58,8 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
     GameDataHolderAccessor holder = stageScene->mHolder;
 
     // Force Cascade to Scenario 1 until Madame Broode is killed
-    if (!isGotShineByHintIdx(holder, GameDataFunction::getWorldIndexWaterfall(), 1)) {
+    if (isInGame && !isGotShineByHintIdx(holder, GameDataFunction::getWorldIndexWaterfall(), 1)) {
         Client::setScenario(GameDataFunction::getWorldIndexWaterfall(), 1);
-        holder.mData->mGameDataFile->mWorldIndexArray[GameDataFunction::getWorldIndexWaterfall()] = 1;
     }
 
     // Force-Enable Topper in Cap Scenario 1
@@ -554,10 +553,6 @@ bool growOnPlant(GrowFlowerPot* thisPtr) {
 
 // _ZN16HakoniwaSequence15exeBootLoadDataEv = 0x50F29C - 0x50F304
 void onNewGameDemoStart(char* name, bool unkBool) {
-    for (int i = 0; i < 18; i++) {
-        Client::setScenario(i, 1);
-    }
-
     for (int i = 0; i < 25; i++) {
         Client::setShineChecks(i, 0);
     }
