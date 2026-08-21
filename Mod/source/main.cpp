@@ -57,9 +57,16 @@ static int messageShiftTimer = 0;
 void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool isYukimaru) {
     GameDataHolderAccessor holder = stageScene->mHolder;
 
-    // Force Cascade to Scenario 1 until Madame Broode is killed
-    if (isInGame && !isGotShineByHintIdx(holder, GameDataFunction::getWorldIndexWaterfall(), 1)) {
-        Client::setScenario(GameDataFunction::getWorldIndexWaterfall(), 1);
+    if (isInGame) {
+        // Force Cascade to Scenario 1 until Madame Broode is killed
+        if (!isGotShineByHintIdx(holder, GameDataFunction::getWorldIndexWaterfall(), 1)) {
+            Client::setScenario(GameDataFunction::getWorldIndexWaterfall(), 1);
+
+        // Skip to Scenario 3 if Sand is already unlocked
+        } else if (Client::getScenario(GameDataFunction::getWorldIndexWaterfall()) == 2 &&
+                    GameDataFunction::isUnlockedWorld(holder, GameDataFunction::getWorldIndexSand())) {
+            Client::setScenario(GameDataFunction::getWorldIndexWaterfall(), 3);
+        }
     }
 
     // Force-Enable Topper in Cap Scenario 1
