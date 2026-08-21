@@ -1066,7 +1066,7 @@ void Client::sendToStage(ChangeStagePacket* packet) {
 
     GameDataHolderAccessor accessor(mSceneInfo->mSceneObjHolder);
 
-    if (packet->scenarioNo < 0)
+    if (packet->scenarioNo > 0)
         setScenario(accessor.mData->mWorldList->tryFindWorldIndexByStageName(packet->changeStage), packet->scenarioNo);
     else if (packet->scenarioNo == 0)
         return;
