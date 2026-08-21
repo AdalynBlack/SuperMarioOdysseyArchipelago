@@ -148,13 +148,13 @@ class SMOWorld(World):
         "cap": 31,
         "cascade": 42,
         "sand": 93,
-        "lake": 44,
         "wooded": 80,
+        "lake": 44,
         "cloud": 9,
         "lost": 35,
         "metro": 85,
-        "snow": 57,
         "seaside": 73,
+        "snow": 57,
         "luncheon": 72,
         "ruined": 12,
         "bowser": 64,
@@ -272,7 +272,7 @@ class SMOWorld(World):
 
         match self.options.colors.value:
             case self.options.colors.option_off:
-                color_list = [0, 0, 5, 7, 2, 0, 0, 1, 4, 8, 6, 0, 3, 9, -1, 9, 9, 27]
+                color_list = [0, 0, 5, 2, 7, 0, 0, 1, 4, 8, 6, 0, 3, 9, -1, 9, 9, 27]
                 for location in self.get_locations():
                     for kingdom in range(17):
                         if location.name in full_moon_locations_list[kingdom]:
@@ -308,7 +308,16 @@ class SMOWorld(World):
                                 break
 
             case self.options.colors.option_classification:
-                pass
+                for location in self.get_locations():
+                    if self.location_name_to_id[location.name] < 1168:
+                        if location.item.classification.progression:
+                            shine_colors[self.location_name_to_id[location.name]] = 2
+                        if location.item.classification.useful or location.item.classification.trap:
+                            shine_colors[self.location_name_to_id[location.name]] = 7
+                        if location.item.classification.filler:
+                            shine_colors[self.location_name_to_id[location.name]] = 6
+                        else:
+                            shine_colors[self.location_name_to_id[location.name]] = 9
 
             case self.options.colors.option_item_random:
                 colors = list(range(30))
