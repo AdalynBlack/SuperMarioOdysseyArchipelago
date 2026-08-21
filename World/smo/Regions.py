@@ -247,7 +247,7 @@ def create_regions(self, world, player):
         create_locs(regMoon, *loc_Moon.keys())
     world.regions.append(regMoon)
 
-    if self.options.shop_sanity != "off":
+    if self.options.shop_sanity != 'off':
         regMoonOutfit = Region("Moon Gift Outfit", player, world, "Moon Gift Outfit")
         if self.options.goal > self.options.goal.option_luncheon:
             create_locs(regMoonOutfit, *loc_Moon_Outfit.keys())
@@ -590,7 +590,7 @@ def create_regions(self, world, player):
 
     regBowserMecha.connect(regBowserPeace, "Bowser World Peace")
     regBowserPeace.connect(regMoon, "Enter Moon", lambda state: count_moons(self, state, "Bowser", player) >= self.moon_counts["bowser"])
-    if self.options.shop_sanity != "off":
+    if self.options.shop_sanity != 'off':
         regBowserPeace.connect(regMoonOutfit, "Obtain Mario Tuxedo", lambda state: count_moons(self, state, "Bowser", player) >= self.moon_counts["bowser"])
 
     regPostMoon.connect(regPostGame)
@@ -618,10 +618,6 @@ def create_regions(self, world, player):
         regPostGame.connect(regMoonShop)
         regPostGame.connect(regMushroomShop)
         regPostGame.connect(regPostGameShop)
-
-        # if self.options.shops == "outfits" or self.options.shops == "all":
-        #     regSand.connect(regPostGameShop)
-
         regDark.connect(regDarkOutfit)
         regDarker.connect(regDarkerOutfit)
 
