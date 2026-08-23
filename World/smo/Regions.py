@@ -497,15 +497,22 @@ def create_regions(self, world, player):
         regSandUnderground.connect(regSandPeace, "Sand World Peace",
                         lambda state: (state.has("Glitch Logic", self.player) or state.has("Bullet Bill", self.player)) and state.has("Knucklotec's Fist", self.player))
 
-        regWooded.connect(regWoodedStoryMaze, "Wooded Story - Red Maze",
-                        lambda state: state.has("Uproot", self.player) or state.has("Glitch Logic", self.player))
+        if self.options.common_capture_skips.value == self.options.common_capture_skips.option_false:
+            regWooded.connect(regWoodedStoryMaze, "Wooded Story - Red Maze",
+                            lambda state: state.has("Uproot", self.player) or state.has("Glitch Logic", self.player))
+        else:
+            regWooded.connect(regWoodedStoryMaze, "Wooded Story - Red Maze")
         regWoodedStoryMaze.connect(regWoodedStorySpewart, "Wooded Story - Post Spewart",
                         lambda state: state.has("Sherm", self.player) or state.has("Glitch Logic", self.player))
         regWoodedStorySpewart.connect(regWoodedPeace, "Wooded World Peace",
                         lambda state: state.has("Uproot", self.player) and state.has("Sherm", self.player))
 
-        regLost.connect(regNightMetro, "Night Metro Enter",
-                        lambda state: count_moons(self, state, "Lost", player) >= self.moon_counts["lost"] and state.has("Spark Pylon", player))
+        if self.options.common_capture_skips.value == self.options.common_capture_skips.option_false:
+            regLost.connect(regNightMetro, "Night Metro Enter",
+                            lambda state: count_moons(self, state, "Lost", player) >= self.moon_counts["lost"] and state.has("Spark Pylon", player))
+        else:
+            regLost.connect(regNightMetro, "Night Metro Enter",
+                            lambda state: count_moons(self, state, "Lost", player) >= self.moon_counts["lost"])
         regNightMetro.connect(regMetro, "Metro Enter",
                         lambda state: state.has("Sherm", player))
 

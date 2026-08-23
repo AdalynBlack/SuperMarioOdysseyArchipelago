@@ -82,7 +82,11 @@ class CaptureSanity(Toggle):
 class CommonCaptureSkips(Toggle):
     """
     Enables logic for frequently used capture skips
-    Currently adds Frogless and First Moon Skip into logic
+    Adds the following tricks:
+    Frogless
+    First Moon Skip
+    Impossible Jump
+    Red Maze Skip
     """
     display_name = "Common Capture Skips"
     default = False
