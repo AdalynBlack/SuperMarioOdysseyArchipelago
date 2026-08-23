@@ -1088,7 +1088,7 @@ sub_area_seaside_stretch = {
 }
 
 loc_Seaside_Postgame = {
-    "Seaside Kingdom - Secret Path to Bubblaine": 464,
+    "Seaside Kingdom - Secret Path to Bubblaine!": 464,
     "Seaside Kingdom - Seaside Kingdom Regular Cup": 1028,
     "Seaside Kingdom - Peach in the Seaside Kingdom": 477,
     "Seaside Kingdom - Above the Parasol: Catch!": 780,
@@ -1648,7 +1648,7 @@ loc_Moon_Postgame = {
     "Moon Kingdom - Sphynx's Hidden Vault": 599,
     "Moon Kingdom - A Tourist in the Moon Kingdom": 911,
     "Moon Kingdom - Peach in the Moon Kingdom": 581,
-    "Wooded Kingdom - Found with Moon Kindgom Art": 1165,
+    "Wooded Kingdom - Found with Moon Kingdom Art": 1165,
     "Moon Kingdom - Mysterious Flying Object": 1049,
     "Moon Kingdom - Hidden on the Side of the Cliff": 810,
     "Moon Kingdom - Jumping High as a Frog": 811,

@@ -264,7 +264,8 @@ def set_rules(self, options : SMOOptions) -> None:
         self.multiworld.get_location("Dark Side - Arrival at Rabbit Ridge!", self.player).place_locked_item(
             self.create_item("Dark Side Multi-Moon"))
     if options.goal == "darker":
-        self.multiworld.get_location("Darker Side - A Long Journey's End!", self.player).place_locked_item(self.create_item("Darker Side Multi-Moon"))
+        self.multiworld.get_location("Darker Side - A Long Journey's End!", self.player).place_locked_item(
+            self.create_item("Darker Side Multi-Moon"))
 
 
     # Captures
@@ -441,7 +442,7 @@ def set_rules(self, options : SMOOptions) -> None:
                      lambda state: state.has("Goomba", self.player))
             set_rule(self.multiworld.get_location("Wooded Kingdom - Elevator Blind Spot", self.player),
                      lambda state: state.has("Sherm", self.player))
-            set_rule(self.multiworld.get_location("Wooded Kingdom - Inside the Rock in the Forest", self.player),
+            set_rule(self.multiworld.get_location("Wooded Kingdom - Inside a Rock in the Forest", self.player),
                      lambda state: state.has("Coin Coffer", self.player) or state.has("Sherm", self.player))
             set_rule(self.multiworld.get_location("Wooded Kingdom - Stretching Your Legs", self.player),
                      lambda state: state.has("Uproot", self.player))
