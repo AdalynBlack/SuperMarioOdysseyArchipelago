@@ -494,67 +494,67 @@ sub_area_waves_poison ={
 }
 
 loc_Wooded = {
+    "Wooded Kingdom - Rolling Rock in the Woods": 149,
+    "Wooded Kingdom - Caught Hopping in the Forest!": 148,
+    "Wooded Kingdom - Tucked Away Inside a Tunnel": 143,
+    "Wooded Kingdom - Climb the Cliff to Get the Nut": 140,
     "Wooded Kingdom - Fire in the Cave": 136,
     "Wooded Kingdom - Shopping in Steam Gardens": 138,
-    "Wooded Kingdom - Climb the Cliff to Get the Nut": 140,
-    "Wooded Kingdom - Tucked Away Inside a Tunnel": 143,
-    "Wooded Kingdom - Caught Hopping in the Forest!": 148,
-    "Wooded Kingdom - Rolling Rock in the Woods": 149,
     "Wooded Kingdom - Rolling Rock in the Deep Woods": 183,
-    "Wooded Kingdom - Beneath the Roots of a Moving Tree": 184,
+    "Wooded Kingdom - Glowing in the Deep Woods": 1137,
+    "Wooded Kingdom - Past The Peculiar Pipes": 1159,
     "Wooded Kingdom - By the Babbling Brook in the Deep Woods": 185,
-    "Wooded Kingdom - Exploring for Treasure": 187,
-    "Wooded Kingdom - Deep Woods Treasure Trap": 188,
     "Wooded Kingdom - The Hard Rock in Deep Woods": 186,
+    "Wooded Kingdom - A Treasure Made of Coins": 1153,
+    "Wooded Kingdom - Beneath the Roots of a Moving Tree": 184,
+    "Wooded Kingdom - Deep Woods Treasure Trap": 188,
+    "Wooded Kingdom - Exploring for Treasure": 187,
     "Wooded Kingdom - Flooding Pipeway": 196,
     "Wooded Kingdom - Flooding Pipeway Ceiling Secret": 197,
-    "Wooded Kingdom - Glowing in the Deep Woods": 1137,
-    "Wooded Kingdom - A Treasure Made of Coins": 1153,
-    "Wooded Kingdom - Past The Peculiar Pipes": 1159,
 }
 
 loc_Wooded_Post_Maze = {
     "Wooded Kingdom - Road to Sky Garden": 129,
     "Wooded Kingdom - Flower Thieves of Sky Garden": 130,
-    "Wooded Kingdom - Atop a Tall Tree": 139,
+    "Wooded Kingdom - Atop the Tall Tree": 139,
+    "Wooded Kingdom - The Nut ‘Round The Corner": 145,
     "Wooded Kingdom - The Nut in the Red Maze": 141,
     "Wooded Kingdom - The Nut at the Dead End": 142,
-    "Wooded Kingdom - The Nut ‘Round The Corner": 145,
 }
 
 loc_Wooded_Post_Metro = {
-    "Wooded Kingdom - Secret Path to the Steam Gardens": 137
+    "Wooded Kingdom - Secret Path to Steam Gardens!": 137
 }
 
 loc_Wooded_Post_Spewart = {
-    "Wooded Kingdom - Love in the Forest Ruins": 131,
+    "Wooded Kingdom - Back Way Up the Mountain": 150,
+    "Wooded Kingdom - Path to the Secret Flower Field": 159,
     "Wooded Kingdom - Thanks for the Charge!": 135,
     "Wooded Kingdom - Over the Cliff's Edge": 146,
     "Wooded Kingdom - The Nut that Grew on the Tall Fence": 147,
-    "Wooded Kingdom - Back Way Up the Mountain": 150,
-    "Wooded Kingdom - Path to the Secret Flower Field": 159,
-    "Wooded Kingdom - Elevator Blind Spot": 189,
-    "Wooded Kingdom - Elevator Escalation": 190,
+    "Wooded Kingdom - Love in the Forest Ruins": 131,
+    "Wooded Kingdom - Spinning-Platforms Treasure": 195,
     "Wooded Kingdom - Flower Road Run": 191,
     "Wooded Kingdom - Flower Road Reach": 192,
-    "Wooded Kingdom - Spinning-Platforms Treasure": 195,
+    "Wooded Kingdom - Elevator Escalation": 190,
+    "Wooded Kingdom - Elevator Blind Spot": 189,
 }
 
 loc_Wooded_Peace = {
-    "Wooded Kingdom - Hey Out There, Captain Toad!": 133,
     "Wooded Kingdom - Behind the Rock Wall": 134,
-    "Wooded Kingdom - Cracked Nut on a Crumbling Tower": 144,
-    "Wooded Kingdom - Wooded Kingdom Timer Challenge 1": 157,
-    "Wooded Kingdom - Stretching Your Legs": 179,
-    "Wooded Kingdom - Nut Planted in the Tower": 180,
     "Wooded Kingdom - Defend the Secret Flower Field!": 181,
+    "Wooded Kingdom - Cracked Nut on a Crumbling Tower": 144,
+    "Wooded Kingdom - Hey Out There, Captain Toad!": 133,
+    "Wooded Kingdom - Inside a Rock in the Forest": 1026,
+    "Wooded Kingdom - Nut Planted in the Tower": 180,
+    "Wooded Kingdom - Stretching Your Legs": 179,
     "Wooded Kingdom - Make the Secret Flower Field Bloom": 182,
+    "Wooded Kingdom - Wooded Kingdom Timer Challenge 1": 157,
+    "Wooded Kingdom - Wooded Kingdom Timer Challenge 2": 676,
     "Wooded Kingdom - Wandering in the Fog": 193,
     "Wooded Kingdom - Nut Hidden in the Fog": 194,
     "Wooded Kingdom - Walking on Clouds": 198,
     "Wooded Kingdom - Above the Clouds": 199,
-    "Wooded Kingdom - Wooded Kingdom Timer Challenge 2": 676,
-    "Wooded Kingdom - Inside the Rock in the Forest": 1026,
     "Sand Kingdom - Found with Wooded Kingdom Art": 1089
 }
 
