@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from Options import Toggle, Choice, FreeText, PerGameCommonOptions, DeathLink
+from Options import Toggle, Choice, FreeText, PerGameCommonOptions, DeathLink, Visibility
 
 
 class Goal(Choice):
@@ -93,6 +93,15 @@ class ExtraMoons(Choice):
 
     default = 1.2  # default to some
 
+class ProgressiveMoons(Toggle):
+    """
+    When enabled, all moons will become generic
+    Significantly reduces BK potential and forces kingdom to unlock one at a time
+    """
+    display_name = "Progressive Moons"
+    default = False
+    visibility = Visibility.none
+
 class TrickJumpLogic(Choice):
     """
         Difficulty of trick jumps considered as in logic.
@@ -122,11 +131,12 @@ class SMODeathLink(DeathLink):
 class SMOOptions(PerGameCommonOptions):
     goal: Goal
     story : StorySanity
+    progressive_moons : ProgressiveMoons
     extra_moons : ExtraMoons
     shop_sanity : ShopSanity
+    capture_sanity : CaptureSanity
     # replace: ReplaceUnneededMoons
     colors : RandomizeMoonColors
     counts : RandomizeMoonCount
-    capture_sanity : CaptureSanity
     death_link : SMODeathLink
 

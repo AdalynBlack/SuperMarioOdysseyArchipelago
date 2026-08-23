@@ -455,6 +455,8 @@ class SMOWorld(World):
                 classification = ItemClassification.progression
             elif name in moon_types and self.options.goal >= self.options.goal.option_dark:
                 classification = ItemClassification.progression # Not sure how to handle filler for dark/darker
+            elif name in moon_types and self.options.progressive_moons:
+                classification = ItemClassification.progression
             elif name in moon_types:
                 moon_kingdom = name.split(" ")[0]
 
@@ -559,6 +561,15 @@ class SMOWorld(World):
             0, # Dark
             0, # Darker
         ]
+
+        self.indexed_moon_counts = [0] * 17
+
+        for kingdom_index in range(17):
+            if world_list[kingdom_index].lower() in self.moon_counts:
+                self.indexed_moon_counts[kingdom_index] = self.moon_counts[world_list[kingdom_index].lower()]
+            else:
+                self.indexed_moon_counts[kingdom_index]
+
         if self.options.goal == self.options.goal.option_dark:
             kingdoms : list = list(range(15))
             while sum(revised_counts[0:15]) < self.moon_counts["dark"]:
@@ -584,26 +595,27 @@ class SMOWorld(World):
                         or (world_list[index] in story_moons and location in story_moons[world_list[index]])
                         or (index < 14 and world_list[index] in multi_moons and location in multi_moons[world_list[index]])):
                         # found = True
-                        item: str = world_list[index]
+                        item: str = ""
                         place : bool = False
 
-                        if "Dark" in item:
-                            item += " Side"
+                        if not self.options.progressive_moons:
+                            item += f'{world_list[index]} '
+                            if "Dark" in item:
+                                item += "Side "
                         # Multi
                         if world_list[index] in multi_moons and location in multi_moons[world_list[index]]:
-                            item += " Multi-Moon"
+                            item += "Multi-Moon"
                             # Prevent placement of duplicate goal Multi-Moon
                             if location == goals_table[self.options.goal.value]:
                                 break
                             place = not self.options.story >= 2
                         elif world_list[index] in story_moons and location in story_moons[world_list[index]]:
-                            item += " Story Moon"
+                            item += "Story Moon"
                             place = not (self.options.story == 1 or self.options.story == 3)
+                        elif world_list[index] == "Mushroom" and not self.options.progressive_moons:
+                            item = "Power Star"
                         else:
-                            if world_list[index] == "Mushroom":
-                                item = "Power Star"
-                            else:
-                                item += " Power Moon"
+                            item += "Power Moon"
 
                         placement_counts[index] += 3 if "Multi" in item else 1
 
@@ -618,10 +630,14 @@ class SMOWorld(World):
                     break
             # if not found:
             #     print(location)
+
         for index in range(len(world_list)):
             while placement_counts[index] > revised_counts[index]:
-                if world_list[index] + " Power Moon" in pool:
-                    pool.remove(world_list[index] + " Power Moon")
+                moon_name = "Power Moon"
+                if not self.options.progressive_moons:
+                    moon_name = f'{world_list[index]} Power Moon'
+                if moon_name in pool:
+                    pool.remove(moon_name)
                     placement_counts[index] -= 1
                     pool.append("Coins")
                 else:

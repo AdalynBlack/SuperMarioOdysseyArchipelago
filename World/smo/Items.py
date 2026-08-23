@@ -50,6 +50,9 @@ moon_types = {
     "Bowser Multi-Moon": 35,
     "Mushroom Multi-Moon": 36,
     "Dark Side Multi-Moon": 38,
+    "Power Moon": 39,
+    "Story Moon": 40,
+    "Multi-Moon": 41,
 }
 
 moon_item_table = {
