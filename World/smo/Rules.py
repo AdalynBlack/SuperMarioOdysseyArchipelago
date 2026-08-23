@@ -271,10 +271,11 @@ def set_rules(self, options : SMOOptions) -> None:
     # Captures
     if options.capture_sanity.value == options.capture_sanity.option_true:
         # Intro Sequence
-        set_rule(self.multiworld.get_location("Spark Pylon", self.player),
-                 lambda state: state.has("Frog", self.player) or state.has("Glitch Logic", self.player))
-        set_rule(self.multiworld.get_location("Chain Chomp", self.player),
-                 lambda state: state.has("Frog", self.player) or state.has("Glitch Logic", self.player))
+        if options.common_capture_skips.value == options.common_capture_skips.option_false:
+            set_rule(self.multiworld.get_location("Spark Pylon", self.player),
+                     lambda state: state.has("Frog", self.player) or state.has("Glitch Logic", self.player))
+            set_rule(self.multiworld.get_location("Chain Chomp", self.player),
+                     lambda state: state.has("Frog", self.player) or state.has("Glitch Logic", self.player))
 
         # Cascade Story
         set_rule(self.multiworld.get_location("Cascade Kingdom - Our First Power Moon", self.player),

@@ -79,6 +79,14 @@ class CaptureSanity(Toggle):
     display_name = "Randomize Captures"
     #visibility = 0b1101
 
+class CommonCaptureSkips(Toggle):
+    """
+    Enables logic for frequently used capture skips
+    Currently adds Frogless and First Moon Skip into logic
+    """
+    display_name = "Common Capture Skips"
+    default = False
+
 class ExtraMoons(Choice):
     """
     Sets the multiplier for the number of extra moons available in the pool for each kingdom.
@@ -135,6 +143,7 @@ class SMOOptions(PerGameCommonOptions):
     extra_moons : ExtraMoons
     shop_sanity : ShopSanity
     capture_sanity : CaptureSanity
+    common_capture_skips : CommonCaptureSkips
     # replace: ReplaceUnneededMoons
     colors : RandomizeMoonColors
     counts : RandomizeMoonCount

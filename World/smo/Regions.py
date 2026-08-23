@@ -482,10 +482,14 @@ def create_regions(self, world, player):
         world.regions.append(regMetroPostGameCaptures)
 
     # Progression Connections
-        regIntro.connect(regCascade, "Collect First Moon",
-                         lambda state: (state.has("Frog", self.player) and
-                         state.has("Chain Chomp", self.player)) or
-                         state.has("Glitch Logic", self.player))
+
+        if self.options.common_capture_skips.value == self.options.common_capture_skips.option_false:
+            regIntro.connect(regCascade, "Collect First Moon",
+                             lambda state: (state.has("Frog", self.player) and
+                             state.has("Chain Chomp", self.player)) or
+                             state.has("Glitch Logic", self.player))
+        else:
+            regIntro.connect(regCascade, "First Moon Skip")
 
         regCascade.connect(regCascadePeace, "Cascade World Peace", lambda state: state.has("Broode's Chain Chomp", player) and (state.has("Big Chain Chomp", self.player) or state.has("T-Rex", self.player) or state.has("Glitch Logic", self.player)))
         regSand.connect(regSandPyramid, "Sand Pyramid Access",
