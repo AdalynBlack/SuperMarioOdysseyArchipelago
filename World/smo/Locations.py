@@ -2069,7 +2069,7 @@ full_moon_locations_list = [
     {**loc_Cap, **loc_Cap_Postgame},
     {**loc_Cascade, **loc_Cascade_Peace, **loc_Cascade_Revisit, **loc_Cascade_Post_Snow, **loc_Cascade_Post_Metro, **loc_Cascade_Postgame},
     {**loc_Sand, **loc_Sand_Peace, **loc_Sand_Revisit, **loc_Sand_Pyramid, **loc_Sand_Underground, **loc_Sand_Postgame},
-    {**loc_Wooded, **loc_Wooded_Post_Spewart, **loc_Wooded_Peace, **loc_Wooded_Post_Metro, **loc_Wooded_Postgame},
+    {**loc_Wooded, **loc_Wooded_Post_Spewart, **loc_Wooded_Post_Maze, **loc_Wooded_Peace, **loc_Wooded_Post_Metro, **loc_Wooded_Postgame},
     {**loc_Lake, **loc_Lake_Post_Seaside, **loc_Lake_Postgame},
     {**loc_Cloud, **loc_Cloud_Postgame},
     {**loc_Lost, **loc_Lost_Revisit, **loc_Lost_Postgame},
@@ -2079,7 +2079,7 @@ full_moon_locations_list = [
     {**loc_Luncheon, **loc_Luncheon_Post_Spewart, **loc_Luncheon_Post_Cheese_Rocks, **loc_Luncheon_Peace, **loc_Luncheon_Post_Wooded, **loc_Luncheon_Postgame},
     {**loc_Ruined, **loc_Ruined_Postgame},
     {**loc_Bowser, **loc_Bowser_Infiltrate, **loc_Bowser_Post_Bombing, **loc_Bowser_Mecha_Broodal, **loc_Bowser_Peace, **loc_Bowser_Postgame},
-    {**loc_Moon, **loc_Moon_Postgame},
+    {**loc_Moon, **loc_Moon_Postgame, **loc_Doctor_Outfit_Moon},
     {**loc_Mushroom, **loc_Mushroom_Post_Luncheon},
     loc_Dark,
     loc_Darker
