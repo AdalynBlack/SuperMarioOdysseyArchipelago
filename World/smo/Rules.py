@@ -232,20 +232,20 @@ def set_rules(self, options : SMOOptions) -> None:
 
     # Completion State
     if options.goal == options.goal.option_sand:
-        self.multiworld.completion_condition[self.player] = lambda state: state.count("Sand Multi-Moon", self.player) >= 2
+        self.multiworld.completion_condition[self.player] = lambda state: state.can_reach_location("Sand Kingdom - The Hole in the Desert", self.player)
     if options.goal == options.goal.option_lake:
-        self.multiworld.completion_condition[self.player] = lambda state: state.has("Lake Multi-Moon", self.player)
+        self.multiworld.completion_condition[self.player] = lambda state: state.can_reach_location("Lake Kingdom - Broodals Over the Lake", self.player)
     if options.goal == options.goal.option_metro:
-        self.multiworld.completion_condition[self.player] = lambda state: state.count("Metro Multi-Moon", self.player) >= 2
+        self.multiworld.completion_condition[self.player] = lambda state: state.can_reach_location("Metro Kingdom - A Traditional Festival!", self.player)
     if options.goal == options.goal.option_luncheon:
-        self.multiworld.completion_condition[self.player] = lambda state: state.count("Luncheon Multi-Moon", self.player) >= 2
+        self.multiworld.completion_condition[self.player] = lambda state: state.can_reach_location("Luncheon Kingdom - Cookatiel Showdown!", self.player)
     if options.goal == options.goal.option_moon:
-        self.multiworld.completion_condition[self.player] = lambda state: state.has("Beat the Game", self.player)
+        self.multiworld.completion_condition[self.player] = lambda state: state.can_reach_location("Beat the Game", self.player)
         self.multiworld.get_location("Beat the Game", self.player).place_locked_item(self.create_item("Beat the Game"))
     if options.goal == options.goal.option_dark:
-        self.multiworld.completion_condition[self.player] = lambda state: state.has("Dark Side Multi-Moon", self.player)
+        self.multiworld.completion_condition[self.player] = lambda state: state.can_reach_location("Dark Side - Arrival at Rabbit Ridge!", self.player)
     if options.goal == options.goal.option_darker:
-        self.multiworld.completion_condition[self.player] = lambda state: state.has("Darker Side Multi-Moon", self.player)
+        self.multiworld.completion_condition[self.player] = lambda state: state.can_reach_location("Darker Side - A Long Journey's End!", self.player)
 
     # Place Goal moon at location
     if options.goal == "sand":
