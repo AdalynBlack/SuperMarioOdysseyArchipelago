@@ -70,6 +70,19 @@ class RandomizeMoonCount(Choice):
     option_off = 0
     default = 0
 
+class MoonDistribution(Choice):
+    """
+    Determines how much jitter is added to per-moon sorting.
+    Lower values strictly force moons for early kingdom to appear early in logic
+    Higher values allow moons from later kingdoms to apear earlierin logic
+    """
+    display_name = "Progression Guide Jitter"
+    option_high = 2.5
+    option_normal = 1.5
+    option_low = 0.5
+    option_none = 0
+    default = option_normal
+
 class CaptureSanity(Toggle):
     """Randomizes Captures.
     Warning this is an experimental feature!
@@ -145,6 +158,7 @@ class SMOOptions(PerGameCommonOptions):
     story : StorySanity
     progressive_moons : ProgressiveMoons
     extra_moons : ExtraMoons
+    moon_distribution : MoonDistribution
     shop_sanity : ShopSanity
     capture_sanity : CaptureSanity
     common_capture_skips : CommonCaptureSkips

@@ -4,7 +4,7 @@ from math import floor
 from typing import Mapping, Any, TextIO
 from .Items import item_table, SMOItem, filler_item_table, outfits, shop_items, multi_moons, \
     moon_item_table, moon_types, story_moons, world_list, stickers, souvenirs, capture_items, \
-    location_hint_list
+    location_hint_list, item_priorities
 from .Locations import locations_table, SMOLocation, locations_list, post_game_locations_list, \
     special_locations_table, full_moon_locations_list, goals_table
 from .Options import SMOOptions
@@ -417,14 +417,9 @@ class SMOWorld(World):
         create_regions(self, self.multiworld, self.player)
 
     def generate_early(self):
-        pass
-        # self.multiworld.early_items[self.player]["Cascade Multi-Moon"] = 1
-        # self.multiworld.early_items[self.player]["Cascade Story Moon"] = 1
-        # self.multiworld.early_items[self.player]["Cascade Power Moon"] = self.moon_counts["cascade"]-4
-        # if self.options.capture_sanity.value == self.options.capture_sanity.option_true:
-        #     self.multiworld.early_items[self.player]["Broode's Chain Chomp"] = 1
-        #     self.multiworld.early_items[self.player]["Chain Chomp"] = 1
-        #     self.multiworld.early_items[self.player]["T-Rex"] = 1
+        if self.options.capture_sanity.value == self.options.capture_sanity.option_true and self.options.common_capture_skips.value == self.options.capture_sanity.option_false:
+            # Frog has to be sphere 1 if frogless isn't in logic
+            self.multiworld.local_early_items[self.player]["Frog"] = 1
 
     def generate_basic(self) -> None:
         pass
@@ -714,7 +709,6 @@ class SMOWorld(World):
         for key in self.placed_counts.keys():
             self.placed_counts[key] = 0
 
-
     def randomize_moon_amounts(self):
         """ Randomizes the moon requirements for progressing to each kingdom."""
         self.moon_counts = dict(self.vanilla_moon_counts)
@@ -808,6 +802,21 @@ class SMOWorld(World):
         #     self.outfit_moon_counts[key] = int(self.outfit_moon_counts[key] * (self.moon_counts["dark"]/250))
             # if self.outfit_moon_counts[key] > self.moon_counts["dark"]:
             #     self.outfit_moon_counts[key] = self.moon_counts["dark"] - 1
+
+    @classmethod
+    def stage_fill_hook(cls, multiworld, progitempool, usefulitempool, filleritempool, fill_locations):
+        # Credit to @Mysteryem for this hook and the sort_fuc, and Jake for pointing it out
+        smo_players = multiworld.get_game_players(cls.game)
+
+        def sort_func(item: Item):
+            # Credit once again for @Mysteryem for this function AND very nice description
+            if item.player in smo_players and item.name in item_priorities.keys():
+                return item_priorities[item.name] + multiworld.random.gauss(0, multiworld.worlds[item.player].options.moon_distribution.value)
+            else:
+                # Python sorting is stable, so this will leave everything else in its original order.
+                return 0
+
+        progitempool.sort(key=sort_func)
 
     def write_spoiler_header(self, spoiler_handle: TextIO) -> None:
         if self.options.counts > 0:
