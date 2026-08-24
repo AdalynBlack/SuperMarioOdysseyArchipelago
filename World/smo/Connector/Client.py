@@ -749,16 +749,21 @@ def launch(*launch_args: str):
         ctx.ping_task = asyncio.create_task(ping_loop(ctx), name="PingLoop")
         ctx.server_comm_task = asyncio.create_task(comm_loop(ctx), name="CommLoop")
 
+
         if tracker_loaded:
             ctx.run_generator()
         if gui_enabled:
             ctx.run_gui()
         ctx.run_cli()
 
-        await ctx.proxy
-        await ctx.proxy_chat
-        await ctx.ping_task
-        await ctx.server_comm_task
+        try:
+            await ctx.proxy
+            await ctx.proxy_chat
+            await ctx.ping_task
+            await ctx.server_comm_task
+        except OSError as e:
+            logger.exception(e)
+            ctx.ui.print_json([{"type": "color", "color": "red", "text": "Failed to start internal server. Please close all client instances before opening a new one."}])
         # Make ping task wait 1-second intervals
         # Add counter member to ctx
         # if packet of any kind is read from stream,
