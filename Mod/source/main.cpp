@@ -62,10 +62,11 @@ void updatePlayerInfo(StageScene* stageScene, PlayerActorBase* playerBase, bool 
         if (!isGotShineByHintIdx(holder, GameDataFunction::getWorldIndexWaterfall(), 1)) {
             Client::setScenario(GameDataFunction::getWorldIndexWaterfall(), 1);
 
-        // Skip to Scenario 3 if Sand is already unlocked
+        // Skip to Scenario 7 if Sand is already unlocked
+        // WHY is Scenario 7 the peace scenario?! Thanks Nintendo.
         } else if (Client::getScenario(GameDataFunction::getWorldIndexWaterfall()) == 2 &&
                     GameDataFunction::isUnlockedWorld(holder, GameDataFunction::getWorldIndexSand())) {
-            Client::setScenario(GameDataFunction::getWorldIndexWaterfall(), 3);
+            Client::setScenario(GameDataFunction::getWorldIndexWaterfall(), 7);
         }
     }
 
