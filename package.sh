@@ -14,7 +14,7 @@ cd ./Mod
 cd ..
 cp ./Mod/starlight_patch_100/SMO_Archipelago_*.zip ./
 
-VERSION=$(git describe --tags --no-abbrev)
+VERSION=$(git describe --tags --no-abbrev | sed -Ee 's/(v)?([0-9]*\.[0-9]+\.[0-9]+)(-[0-9]+)?/\2/g')
 
 # Zip the world
 jq -S ".world_version = \"${VERSION:1}\"" archipelago.json > ./World/smo/archipelago.json
