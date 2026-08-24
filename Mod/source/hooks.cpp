@@ -90,19 +90,6 @@ void saveFileWriteHook(al::ByamlWriter* saveByaml) {
 bool saveFileReadHook(al::ByamlIter *saveByaml, bool* firstNetworkBool, char const* firstNetworkKey) {
     int data = 0;
 
-    for (int i = 0; i < 17; i++) {
-        sead::FixedSafeString<18> label;
-        label = "World";
-        if (i / 10 > 0) {
-            label.append(static_cast<char>(48 + i / 10));
-        }
-        label.append(static_cast<char>(48 + i % 10));
-        label.append("Scenario");
-        if (saveByaml->tryGetIntByKey(&data, label.cstr())) {
-            Client::setScenario(i, data);
-        }
-    }
-
     if (saveByaml->tryGetIntByKey(&data, "CheckIndex")) {
         Client::setCheckIndex(data);
     }
