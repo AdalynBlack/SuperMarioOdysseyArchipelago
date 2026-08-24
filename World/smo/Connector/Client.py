@@ -522,7 +522,7 @@ class SMOContext(SuperContext):
 
     def make_gui(self):
         ui = super().make_gui()
-        ui.base_title = "Adi's Unofficial Super Mario Odyssey Archipelago Client"
+        ui.base_title = "Super Mario Odyssey"
         return ui
 
 async def ping_loop(ctx : SMOContext):

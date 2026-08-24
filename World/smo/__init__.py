@@ -21,7 +21,7 @@ def launch_client(*args: str):
     from .Connector.Client import launch
     launch_component(launch, name="SMOClient", args=args)
 
-component = Component("Adi's Unofficial Super Mario Odyssey Client", component_type=component_type.CLIENT,
+component = Component("Super Mario Odyssey", component_type=component_type.CLIENT,
                       game_name="Super Mario Odyssey", func=launch_client)
 components.append(component)
 
