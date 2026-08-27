@@ -427,6 +427,27 @@ class SMOWorld(World):
     def set_rules(self):
         set_rules(self, self.options)
 
+
+    created_moons = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+    ]
+
     def create_item(self, name: str) -> Item:
         # Glitch Logic item needs to be progression or UT doesn't use it
         if name == self.glitches_item_name:
