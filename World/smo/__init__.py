@@ -465,7 +465,7 @@ class SMOWorld(World):
                     if self.created_moons[moon_kingdom_index] < self.moon_counts[moon_kingdom.lower()]:
                         classification = ItemClassification.progression
                     else:
-                        classification = ItemClassification.filler
+                        classification = ItemClassification.useful
 
                 self.created_moons[moon_kingdom_index] += 3 if "Multi" in name else 1
 
