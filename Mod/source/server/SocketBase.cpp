@@ -3,11 +3,14 @@
 #include "nn/result.h"
 #include "types.h"
 
+// Borrowed from musl std library
+#define MSG_DONTWAIT  0x0040
+
 SocketBase::SocketBase(const char *name)
 {
     strcpy(this->sockName, name);
 #if EMU
-    this->sock_flags = 0x80;
+    this->sock_flags = MSG_DONTWAIT;
 #else
     this->sock_flags = 0;
 #endif
