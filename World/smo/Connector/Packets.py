@@ -364,7 +364,7 @@ class ApInfoPacket:
 
         for i in range(3):
             if i < len(self.info):
-                if len(self.info[i]) > 40:
+                if len(self.info[i]) >= 40:
                     data += self.info[i][:40].encode()
                 else:
                     data += self.info[i].encode()
