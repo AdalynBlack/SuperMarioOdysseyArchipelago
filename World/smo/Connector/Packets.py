@@ -85,8 +85,7 @@ class CheckPacket:
         while len(data) < 12 + self.OBJ_ID_SIZE + self.STAGE_NAME_SIZE:
             data += b"\x00"
         data += self.amount.to_bytes(4, "little", signed=True)
-        if len(data) != self.SIZE:
-            raise f"CheckPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"CheckPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -127,9 +126,7 @@ class ShineChecksPacket:
                 filler = 0
                 data += filler.to_bytes(length=2, byteorder="little", signed=True)
 
-
-        if len(data) != self.SIZE:
-            raise f"ShineChecksPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"ShineChecksPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -160,12 +157,11 @@ class ChatMessagePacket:
                 if size < self.MESSAGE_SIZE:
                     data += char.encode()
                 else:
-                    raise "Message too long exception"
+                    assert False, "Message too long exception"
 
             while len(data) < self.MESSAGE_SIZE * (index + 1):
                 data += b"\x00"
-        if len(data) != self.SIZE:
-            raise f"ChatMessagePacket failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"ChatMessagePacket failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
 
@@ -249,8 +245,7 @@ class SlotDataPacket:
         data += int_value.to_bytes(2, "little")
         data += self.regionals.to_bytes(1, "little")
         data += self.captures.to_bytes(1, "little")
-        if len(data) != self.SIZE:
-            raise f"CountsPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"CountsPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -323,8 +318,7 @@ class ChangeStagePacket:
         data += int_value.to_bytes(1, "little", signed=True)
         int_value2 : int = self.sub_scenario_type.value
         data += int_value2.to_bytes(1, "little", signed=False)
-        if len(data) != self.SIZE:
-            raise f"ChangeStagePacket failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"ChangeStagePacket failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -378,8 +372,7 @@ class ApInfoPacket:
             while len(data) < 8 + self.INFO_SIZE * (i + 1):
                 data += b"\x00"
 
-        if len(data) != self.SIZE:
-            raise f"ApInfoPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"ApInfoPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -426,8 +419,7 @@ class ShopReplace:
                 data += filler.to_bytes(1,"little", signed=False)
                 data += filler.to_bytes(1,"little", signed=False)
 
-        if len(data) != self.SIZE:
-            raise f"ShopReplace failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"ShopReplace failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -462,8 +454,7 @@ class ShineReplace:
                 filler = 255
                 data += filler.to_bytes(1,"little", signed=False)
 
-        if len(data) != self.SIZE:
-            raise f"ShineReplace failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"ShineReplace failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -495,9 +486,7 @@ class ShineColor:
                 data += filler.to_bytes(2,"little")
                 data += filler.to_bytes(1,"little", signed=True)
 
-        if len(data) != self.SIZE:
-            print(len(data))
-            raise f"ShineColor failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"ShineColor failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -533,8 +522,7 @@ class ShineHint:
                 filler = 255
                 data += filler.to_bytes(1,"little", signed=False)
 
-        if len(data) != self.SIZE:
-            raise f"ShineReplace failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"ShineReplace failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
@@ -593,8 +581,7 @@ class InitPacket:
         data : bytearray = bytearray()
         as_integer : int = self.max_players.value
         data += as_integer.to_bytes(2, "little")
-        if len(data) != self.SIZE:
-            raise f"InitPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"InitPacket failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
 
@@ -629,8 +616,7 @@ class PacketHeader:
         data += int_value.to_bytes(2, "little")
         int_value2 : int = self.packet_size
         data += int_value2.to_bytes(2, "little")
-        if len(data) != self.SIZE:
-            raise f"PacketHeader failed to serialize. bytearray is incorrect size {self.SIZE}."
+        assert len(data) == self.SIZE, f"PacketHeader failed to serialize. bytearray is incorrect size {self.SIZE}."
         return data
 
     def deserialize(self, data : bytes | bytearray) -> None:
