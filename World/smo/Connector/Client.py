@@ -623,6 +623,7 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
                 case PacketType.Disconnect:
                     ctx.ui.print_json([{"type": "color", "color": "red", "text": "Client Requested Disconnect"}])
                     ctx.game_connected = False
+                    ctx.awaiting_connection = True
                     break
 
                 case PacketType.ChangeStage:
