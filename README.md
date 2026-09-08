@@ -11,7 +11,7 @@ A mod adding Archipelago Multi World support to Super Mario Odyssey.
 - Supports all outfits, stickers, and souvenirs.
 - Choose which kingdom is your win condition.
 
-## Installation and Usage
+## Installation
 * Install the latest version from the releases page. `smo.apworld` and either `SMO_Archipelago_Vx.x_Switch.zip` for console or `SMO_Archipelago_Vx.x_Emu.zip` for emulator.
 * Place `smo.apworld` in the `custom_worlds` folder of your Archipelago install which the default directory is `C:\ProgramData\Archipelago\custom_worlds`
 
@@ -35,12 +35,24 @@ A mod adding Archipelago Multi World support to Super Mario Odyssey.
 - Extract `SMO_Archipelago_Vx.x_Emu.zip` and Place `SMOAP` folder in the mods directory that opened.
 </details>
 
-### Connecting to the Connector from Super Mario Odyssey.
+## Usage
+- Launch the Archipelago Client, search for `Super Mario Odyssey` and click the `Open` button
+- After the client opens, launch your modded SMO installation
 - When prompted, the `IP Address` you are connecting to is your computer's local IP address
     - On Switch: this is found by entering the `ipconfig` command into command prompt on Windows
     - On Emulator: leave the IP at its default value: `127.0.0.1`
 - When prompted, the `Port` is `1027` by default which does not need to be changed.
 - To show these menus again and change your IP and Port, hold ZL while starting the game
+- After connecting, both the client and game should display a confirmation message
+- Enter the IP and Port for your lobby into the SMO Client. For example: `archipelago.gg:38281`. You will then be prompted for a Username and Password
+- At this point, everything should be working and you should be able to send and receive checks
+
+### Usage Tips
+- `/smo` can be used to check the status of your connection
+- `/warp <kingdom> [scenario]` can be used to warp to any kingdom in any scenario at any time
+    - `/warp metro 3` will take you to Festival Metro to avoid [#3](https://github.com/AdalynBlack/SuperMarioOdysseyArchipelago/issues/3)
+    - `/warp wooded 3` will take you to post-peace Wooded Kingdom to avoid [#4](https://github.com/AdalynBlack/SuperMarioOdysseyArchipelago/issues/4)
+- Depending on when the mod connects to the client, checks may stop sending in some cases. Enter and exit a loading zone to fix this issue
 
 Credits
 - [Sanae](https://github.com/sanae6) Author of original server code
