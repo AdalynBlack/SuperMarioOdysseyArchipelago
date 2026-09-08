@@ -349,6 +349,9 @@ void Client::readFunc() {
 
     mConnectStatus->end();
 
+    // Reset gameinf on reconnect
+    lastGameInfPacket = emptyGameInfPacket;
+
     while(mIsConnectionActive) {
 
         Packet *curPacket = mSocket->tryGetPacket();  // will block until a packet has been received, or socket disconnected
@@ -374,9 +377,6 @@ void Client::readFunc() {
                 // Send relevant info packets when another client is connected
 
                 if (lastGameInfPacket != emptyGameInfPacket) {
-                    // Assume game packets are empty from first connection
-                    if (lastGameInfPacket.mUserID != mUserID)
-                        lastGameInfPacket.mUserID = mUserID;
                     mSocket->send(&lastGameInfPacket);
                 }
 
