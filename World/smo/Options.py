@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from Options import Toggle, Choice, FreeText, PerGameCommonOptions, DeathLink, Visibility
+from Options import Toggle, Choice, FreeText, PerGameCommonOptions, NamedRange, DeathLink, Visibility
 
 
 class Goal(Choice):
@@ -104,19 +104,27 @@ class CommonCaptureSkips(Toggle):
     display_name = "Common Capture Skips"
     default = False
 
-class ExtraMoons(Choice):
+class ExtraMoons(NamedRange):
     """
-    Sets the multiplier for the number of extra moons available in the pool for each kingdom.
-    Default: some = 1.2x moons
+    Sets the percentage of extra moons available in the pool for each kingdom.
+    Default: 175%
     """
     display_name = "Extra Moons"
-    option_none = 1.0
-    option_some = 1.2
-    option_more = 1.5
-    option_many = 1.75
-    option_double = 2.0
+    range_start = 100
+    range_end = 350
 
-    default = 1.2  # default to some
+    special_range_names = {
+        "none": 100,
+        "some": 125,
+        "more": 150,
+        "many": 175,
+        "double": 200,
+        "default": 200,
+        "extra": 250,
+        "all": 10000, # Set to 100x to guarantee every possible moon is spawned in
+    }
+
+    default = "double"
 
 class ProgressiveMoons(Toggle):
     """

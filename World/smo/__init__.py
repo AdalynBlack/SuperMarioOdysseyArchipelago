@@ -560,18 +560,18 @@ class SMOWorld(World):
 
         revised_counts = [
             0, # Cap
-            min(floor(self.moon_counts["cascade"] * self.options.extra_moons.value), self.max_counts["cascade"]),
-            min(floor(self.moon_counts["sand"] * self.options.extra_moons.value), self.max_counts["sand"]),
-            min(floor(self.moon_counts["wooded"] * self.options.extra_moons.value), self.max_counts["wooded"]),
-            min(floor(self.moon_counts["lake"] * self.options.extra_moons.value), self.max_counts["lake"]),
+            min(floor(self.moon_counts["cascade"] * self.options.extra_moons.value / 100), self.max_counts["cascade"]),
+            min(floor(self.moon_counts["sand"] * self.options.extra_moons.value / 100), self.max_counts["sand"]),
+            min(floor(self.moon_counts["wooded"] * self.options.extra_moons.value / 100), self.max_counts["wooded"]),
+            min(floor(self.moon_counts["lake"] * self.options.extra_moons.value / 100), self.max_counts["lake"]),
             0, # Cloud
-            min(floor(self.moon_counts["lost"] * self.options.extra_moons.value), self.max_counts["lost"]),
-            min(floor(self.moon_counts["metro"] * self.options.extra_moons.value), self.max_counts["metro"]),
-            min(floor(self.moon_counts["seaside"] * self.options.extra_moons.value), self.max_counts["seaside"]),
-            min(floor(self.moon_counts["snow"] * self.options.extra_moons.value), self.max_counts["snow"]),
-            min(floor(self.moon_counts["luncheon"] * self.options.extra_moons.value), self.max_counts["luncheon"]),
-            min(floor(self.moon_counts["ruined"] * self.options.extra_moons.value), self.max_counts["ruined"]),
-            min(floor(self.moon_counts["bowser"] * self.options.extra_moons.value), self.max_counts["bowser"]),
+            min(floor(self.moon_counts["lost"] * self.options.extra_moons.value / 100), self.max_counts["lost"]),
+            min(floor(self.moon_counts["metro"] * self.options.extra_moons.value / 100), self.max_counts["metro"]),
+            min(floor(self.moon_counts["seaside"] * self.options.extra_moons.value / 100), self.max_counts["seaside"]),
+            min(floor(self.moon_counts["snow"] * self.options.extra_moons.value / 100), self.max_counts["snow"]),
+            min(floor(self.moon_counts["luncheon"] * self.options.extra_moons.value / 100), self.max_counts["luncheon"]),
+            min(floor(self.moon_counts["ruined"] * self.options.extra_moons.value / 100), self.max_counts["ruined"]),
+            min(floor(self.moon_counts["bowser"] * self.options.extra_moons.value / 100), self.max_counts["bowser"]),
             0, # Moon
             0, # Mushrom
             0, # Dark
