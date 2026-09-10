@@ -563,7 +563,7 @@ def create_regions(self, world, player):
         regMoon.connect(regPostMoon)
 
 
-    regCascade.connect(regSand, "Sand Enter", lambda state: count_moons(self, state, "Cascade", player) >= self.moon_counts["cascade"])
+    regCascade.connect(regSand, "Sand Enter", lambda state: state.can_reach_location("Cascade Kingdom - Our First Power Moon", player) or state.has("Glitch Logic", player) and count_moons(self, state, "Cascade", player) >= self.moon_counts["cascade"])
 
     regSandPyramid.connect(regSandUnderground, "Sand Story Subarea")
 
