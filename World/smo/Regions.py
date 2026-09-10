@@ -583,7 +583,7 @@ def create_regions(self, world, player):
 
     regMetroSewer.connect(regMetroPeace, "Metro World Peace")
     regMetro.connect(regSnow, "Snow Enter", lambda state: count_moons(self, state, "Metro", player) >= self.moon_counts["metro"])
-    regMetro.connect(regCascadeMetro)
+    regMetroPeace.connect(regCascadeMetro)
     regMetro.connect(regWoodedMetro)
     regMetro.connect(regLostRe)
 
