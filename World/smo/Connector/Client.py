@@ -43,7 +43,7 @@ class SMOCommandProcessor(SuperCommandProcessor):
         if isinstance(self.ctx, SMOContext):
             logger.info(f"SMO Status: {self.ctx.get_smo_status()}")
             if self.ctx.disconnect_timer < 0:
-                time_string = f'{">" if self.ctx.disconnect_timer <= -50 else ""}{int(10-self.ctx.disconnect_timer)}'
+                time_string = f'{">" if self.ctx.disconnect_timer <= -50 else ""}{int(15-self.ctx.disconnect_timer)}'
                 warn = f"SMO last responded {time_string} seconds ago"
                 logger.debug(warn)
                 if self.ctx.ui:
@@ -154,7 +154,7 @@ class SMOContext(SuperContext):
         self.slot_data : dict = {}
         #self.checked_locations : set
         self.ping_task = None
-        self.awaiting_connection : bool = False
+        self.awaiting_connection : bool = True
         self.disconnect_timer : int = -50
         self.logged_in : bool = False
         self.multi_moon_anim : bool = False
@@ -173,6 +173,8 @@ class SMOContext(SuperContext):
     def get_smo_status(self) -> str:
         if not self.game_connected:
             return "Not connected to Super Mario Odyssey"
+        elif self.awaiting_connection:
+            return "Attempting to connect to Super Mario Odyssey"
 
         return "Connected to Super Mario Odyssey"
 
@@ -529,8 +531,6 @@ async def ping_loop(ctx : SMOContext):
     while not ctx.exit_event.is_set():
         if ctx.endpoint:
             if ctx.disconnect_timer == 0:
-                ctx.game_connected = False
-            elif ctx.disconnect_timer == -5:
                 ctx.ui.print_json([{"type": "color", "color": "orange", "text": "Client Inactive for 15 Seconds (In a cutscene?)"}])
             if ctx.disconnect_timer > -50:
                 ctx.disconnect_timer -= 1
@@ -562,10 +562,17 @@ async def proxy_chat(ctx : SMOContext):
 
 
 async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWriter, ctx : SMOContext) -> None:
+    if not ctx.awaiting_connection:
+        ctx.ui.print_json([{"type": "color", "color": "orange", "text": "Connect receieved while already connected. Rejecting connection attempt"}])
+        writer.close()
+        return
+    ctx.awaiting_connection = False
+
     data : bytearray
     packet : Packet
     ctx.endpoint = Endpoint(writer.transport.get_extra_info("socket"))
-    ctx.awaiting_connection = True
+    ctx.disconnect_timer = 15
+
     try:
         while True:
             data : bytearray = bytearray(await reader.read(PacketHeader.SIZE))
@@ -584,7 +591,7 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
 
             old_disconnect = ctx.disconnect_timer
             if packet.header.packet_type != PacketType.Unknown:
-                ctx.disconnect_timer = 10
+                ctx.disconnect_timer = 15
                 # Prevent appending server message before connected to server.
             match packet.header.packet_type:
                 case PacketType.Connect:
@@ -604,10 +611,9 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
 
                         ctx.player_data.add_message("\x1b[32mConnected to the AP Client")
 
-                    # Only log initial connection
-                    if ctx.awaiting_connection:
-                        ctx.awaiting_connection = False
-                        ctx.game_connected = True
+                    ctx.ui.print_json([{"type": "color", "color": "orange", "text": "Set Connect"}])
+                    ctx.game_connected = True
+                    ctx.awaiting_connection = False
 
                     needs_slot_data : bool = True
                     for queued_packet in ctx.proxy_msgs:
@@ -715,15 +721,17 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
                 #await asyncio.sleep(0.25)
 
             if not ctx.game_connected and not ctx.awaiting_connection:
-                ctx.awaiting_connection = True
-                ctx.print_json([{"type": "color", "color": "red", "text": "Invalid connection state, not sending more packets"}])
+                ctx.print_json([{"type": "color", "color": "red", "text": f"Invalid connection state, not sending more packets"}])
                 break
     except Exception as e:
         ctx.print_json([{"type": "color", "color": "red", "text": f"Connection Error {e}"}])
         ctx.print_json([{"type": "color", "color": "red", "text": traceback.format_exc()}])
+    finally:
         ctx.player_data.item_index = 0
         ctx.player_data.current_home_stage = ""
+        ctx.ui.print_json([{"type": "color", "color": "orange", "text": "End Connection"}])
         ctx.awaiting_connection = True
+        ctx.game_connected = False
         writer.close()
 
 
