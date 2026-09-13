@@ -8,6 +8,7 @@ docker run -t --rm         \
   -u $(id -u):$(id -g)  \
   -v "/$PWD/":/app/:Z   \
   -e ISEMU=${ISEMU}     \
+  -e make_args="$@"     \
   smoo-client-build     \
 ;
 docker rmi smoo-client-build

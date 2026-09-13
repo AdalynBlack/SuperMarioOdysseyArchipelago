@@ -10,4 +10,4 @@ RUN   apt-get  update       \
 
 WORKDIR  /app/
 
-ENTRYPOINT  make
+ENTRYPOINT  make $make_args

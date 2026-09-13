@@ -16,7 +16,7 @@ PROJNAME ?= StarlightBase
 all: starlight
 
 starlight:
-	$(MAKE) all -f MakefileNSO SMOVER=$(SMOVER) BUILDVERSTR=$(BUILDVERSTR) BUILDVER=$(BUILDVER) DEBUGLOG=$(DEBUGLOG) SERVERIP=${SERVERIP} EMU=${ISEMU}
+	$(MAKE) all $(MAKEFLAGS) -f MakefileNSO SMOVER=$(SMOVER) BUILDVERSTR=$(BUILDVERSTR) BUILDVER=$(BUILDVER) DEBUGLOG=$(DEBUGLOG) SERVERIP=${SERVERIP} EMU=${ISEMU}
 	$(MAKE) starlight_patch_$(SMOVER)/*.ips
 	
 	mkdir -p starlight_patch_$(SMOVER)/atmosphere/exefs_patches/$(PROJNAME)/
@@ -35,7 +35,7 @@ starlight_patch_$(SMOVER)/*.ips: patches/*.slpatch patches/configs/$(SMOVER).con
 
 # builds project with the file structure and flags used for emulators
 emu:
-	$(MAKE) all -f MakefileNSO SMOVER=$(SMOVER) BUILDVERSTR=$(BUILDVERSTR) BUILDVER=$(BUILDVER) EMU=1
+	$(MAKE) all $(MAKEFLAGS) -f MakefileNSO SMOVER=$(SMOVER) BUILDVERSTR=$(BUILDVERSTR) BUILDVER=$(BUILDVER) EMU=1
 	$(MAKE) starlight_patch_$(SMOVER)/*.ips
 
 	mkdir -p starlight_patch_$(SMOVER)/yuzu/
