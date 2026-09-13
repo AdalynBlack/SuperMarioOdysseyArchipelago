@@ -1336,6 +1336,9 @@ loc_Luncheon_Captures = {
 
 loc_Luncheon_Captures_Post_Cheese_Rocks = {
     "Meat": 3740,
+}
+
+loc_Luncheon_Captures_Peace = {
     "Fire Piranha Plant": 3741,
 }
 

@@ -20,7 +20,7 @@ from .Locations import SMOLocation, loc_Cap, loc_Cascade, loc_Cascade_Revisit, \
     loc_Wooded_Captures, loc_Wooded_Captures_Post_Maze, loc_Wooded_Captures_Postgame, \
     loc_Lake_Captures, loc_Cloud_Captures, loc_Lost_Captures, loc_Metro_Captures, \
     loc_Metro_Captures_Postgame, loc_Seaside_Captures, loc_Snow_Captures, \
-    loc_Snow_Captures_Peace, loc_Luncheon_Captures, loc_Luncheon_Captures_Post_Cheese_Rocks, \
+    loc_Snow_Captures_Peace, loc_Luncheon_Captures, loc_Luncheon_Captures_Post_Cheese_Rocks, loc_Luncheon_Captures_Peace, \
     loc_Bowser_Captures, loc_Bowser_Captures_Post_Bombing, loc_Moon_Captures, \
     loc_Moon_Cave_Captures, loc_Mushroom_Captures, loc_Cascade_Peace, loc_Moon_Outfit, loc_Night_Metro, \
     loc_Cascade_Full, loc_Sand_Full
@@ -413,6 +413,7 @@ def create_regions(self, world, player):
     regSnowPeaceCaptures = Region("Snow Peace Captures", player, world, "Captures")
     regLuncheonCaptures = Region("Luncheon Captures", player, world, "Captures")
     regLuncheonPostCheeseRocksCaptures = Region("Luncheon Post Cheese Rocks Captures", player, world, "Captures")
+    regLuncheonPeaceCaptures = Region("Luncheon Peace Captures", player, world, "Captures")
     regBowserCaptures = Region("Bowser Captures", player, world, "Captures")
     regBowserPostBombingCaptures = Region("Bowser Post Bombing Captures", player, world, "Captures")
     regMoonCaptures = Region("Moon Captures", player, world, "Captures")
@@ -444,6 +445,7 @@ def create_regions(self, world, player):
             create_locs(regSnowPeaceCaptures, *loc_Snow_Captures_Peace)
             create_locs(regLuncheonCaptures, *loc_Luncheon_Captures)
             create_locs(regLuncheonPostCheeseRocksCaptures, *loc_Luncheon_Captures_Post_Cheese_Rocks)
+            create_locs(regLuncheonPeaceCaptures, *loc_Luncheon_Captures_Peace)
 
         if self.options.goal > self.options.goal.option_luncheon:
             create_locs(regBowserCaptures, *loc_Bowser_Captures)
@@ -473,6 +475,7 @@ def create_regions(self, world, player):
         world.regions.append(regSnowPeaceCaptures)
         world.regions.append(regLuncheonCaptures)
         world.regions.append(regLuncheonPostCheeseRocksCaptures)
+        world.regions.append(regLuncheonPeaceCaptures)
         world.regions.append(regBowserCaptures)
         world.regions.append(regBowserPostBombingCaptures)
         world.regions.append(regMoonCaptures)
@@ -652,6 +655,7 @@ def create_regions(self, world, player):
     regSnowPeace.connect(regSnowPeaceCaptures)
     regLuncheon.connect(regLuncheonCaptures)
     regLuncheonCheese.connect(regLuncheonPostCheeseRocksCaptures)
+    regLuncheonPeace.connect(regLuncheonPeaceCaptures)
     regBowser.connect(regBowserCaptures)
     regBowserBombing.connect(regBowserPostBombingCaptures)
     regMoon.connect(regMoonCaptures)
