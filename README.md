@@ -57,4 +57,6 @@ A mod adding Archipelago Multi World support to Super Mario Odyssey.
 Credits
 - [Sanae](https://github.com/sanae6) Author of original server code
 - [CraftyBoss](https://github.com/CraftyBoss) Author of SMO Online
+- [KGamer77](https://github.com/KGamer77) Original SMO AP implementation
+- [OvOPlant](https://github.com/OvOPlant) Archipelago Logo
 - All other contributors to the aforementioned repos.
