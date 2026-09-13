@@ -161,7 +161,6 @@ class SMOContext(SuperContext):
         self.death_link_enabled : bool = False
         self.forced_death_link = None
         self.death_link_pause_timer : int = -1
-        self.has_warned = False
 
     async def server_auth(self, password_requested: bool = False):
         if password_requested and not self.password:
@@ -603,11 +602,6 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
 
                     if old_disconnect < -5:
                         ctx.ui.print_json([{"type": "color", "color": "green", "text": "SMO Connected"}])
-                        if not ctx.has_warned:
-                            ctx.ui.print_json([{"type": "color",
-                                                "color": "blue",
-                                                "text": "This is an unofficial modification of the SMO Archipelago. Please report any issues to @adibtw on Discord!"}])
-                            ctx.has_warned = True
 
                         ctx.player_data.add_message("\x1b[32mConnected to the AP Client")
 
@@ -796,4 +790,3 @@ def launch(*launch_args: str):
     colorama.just_fix_windows_console()
     asyncio.run(main())
     colorama.deinit()
-    logger.info("This is an unofficial modification of the SMO Archipelago. Please report any issues to @adibtw on Discord!")
