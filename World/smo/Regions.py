@@ -576,7 +576,7 @@ def create_regions(self, world, player):
 
     regSand.connect(regCap)
     regSand.connect(regCascadeRe, "Beat Madame Broode", lambda state: state.can_reach_location("Cascade Kingdom - Multi Moon Atop the Falls", self.player))
-    regSandPeace.connect(regMetroSand)
+    regSandUnderground.connect(regMetroSand)
     regSand.connect(regLake, "Lake Enter", lambda state: count_moons(self, state, "Sand", player) >= self.moon_counts["sand"])
 
     regLake.connect(regWooded, "Wooded Enter")
