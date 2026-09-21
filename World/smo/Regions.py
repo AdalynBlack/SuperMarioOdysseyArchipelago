@@ -523,6 +523,8 @@ def create_regions(self, world, player):
                         lambda state: state.has("Manhole", player))
         regSnow.connect(regSnowPeace, "Snow World Peace",
                         lambda state: state.has("Shiverian Racer", player))
+        regSnowPeace.connect(regCascadeSnow, "Snow to Cascade Painting",
+                        lambda state: state.has("Ty-foo", self.player))
         regSeaside.connect(regSeasidePeace, "Seaside World Peace",
                         lambda state: state.has("Gushen", player))
         regLuncheonCheese.connect(regMushroomLuncheon, "Luncheon Mushroom Painting",
@@ -554,6 +556,8 @@ def create_regions(self, world, player):
         regNightMetro.connect(regMetro, "Metro Enter")
         regMetro.connect(regMetroSewer, "Metro Sewer")
         regSnow.connect(regSnowPeace, "Snow World Peace")
+        regSnowPeace.connect(regCascadeSnow, "Snow to Cascade Painting")
+
         regSeaside.connect(regSeasidePeace, "Seaside World Peace")
         regLuncheonCheese.connect(regMushroomLuncheon)
         regLuncheonSpewart.connect(regLuncheonCheese, "Luncheon Meat Plateau")
@@ -592,7 +596,6 @@ def create_regions(self, world, player):
 
 
     regSnow.connect(regSeaside, "Seaside Enter")
-    regSnow.connect(regCascadeSnow)
 
 
     regSeaside.connect(regLuncheon, "Enter Luncheon", lambda state: count_moons(self, state, "Snow", player) >= self.moon_counts["snow"] and count_moons(self, state, "Seaside", player) >= self.moon_counts["seaside"])
