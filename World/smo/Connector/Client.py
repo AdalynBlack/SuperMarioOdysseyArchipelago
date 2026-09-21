@@ -718,8 +718,8 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
                 ctx.print_json([{"type": "color", "color": "red", "text": f"Invalid connection state, not sending more packets"}])
                 break
     except Exception as e:
-        ctx.print_json([{"type": "color", "color": "red", "text": f"Connection Error {e}"}])
-        ctx.print_json([{"type": "color", "color": "red", "text": traceback.format_exc()}])
+        ctx.ui.print_json([{"type": "color", "color": "red", "text": f"Connection Error {e}"}])
+        ctx.ui.print_json([{"type": "color", "color": "red", "text": traceback.format_exc()}])
     finally:
         ctx.player_data.item_index = 0
         ctx.player_data.current_home_stage = ""
