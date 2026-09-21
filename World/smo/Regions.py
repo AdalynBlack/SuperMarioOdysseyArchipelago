@@ -208,7 +208,7 @@ def create_regions(self, world, player):
     if self.options.goal > self.options.goal.option_metro:
         create_locs(regLuncheonCheese, *loc_Luncheon_Post_Cheese_Rocks.keys())
     world.regions.append(regLuncheonCheese)
-    regLuncheonPeace = Region("Luncheon World Peace", player, world, "Luncheon Kingdom Peace")
+    regLuncheonPeace = Region("Luncheon Peace", player, world, "Luncheon Kingdom Peace")
     if self.options.goal > self.options.goal.option_metro:
         create_locs(regLuncheonPeace, *loc_Luncheon_Peace.keys())
     world.regions.append(regLuncheonPeace)
@@ -590,7 +590,7 @@ def create_regions(self, world, player):
 
     regMetroSewer.connect(regMetroPeace, "Metro World Peace")
     regMetro.connect(regSnow, "Snow Enter", lambda state: count_moons(self, state, "Metro", player) >= self.moon_counts["metro"])
-    regMetroPeace.connect(regCascadeMetro)
+    regMetroPeace.connect(regCascadeMetro, "Cascade Tourist", lambda state: state.can_reach_region("Cascade Peace", self.player) and state.can_reach_region("Sand Peace", self.player))
     regMetro.connect(regWoodedMetro)
     regMetro.connect(regLostRe)
 

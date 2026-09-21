@@ -538,6 +538,10 @@ def set_rules(self, options : SMOOptions) -> None:
                          lambda state: state.has("Manhole", self.player) and state.has("Mini Rocket", self.player))
 
         if self.options.goal > self.options.goal.option_metro:
+            # Metro Peace
+            set_rule(self.multiworld.get_location("Metro Kingdom - A Tourist in the Metro Kingdom!", self.player),
+                     lambda state: state.can_reach_region("Sand Peace", self.player))
+            
             # Seaside
             set_rule(self.multiworld.get_location("Seaside Kingdom - Love by the Seaside", self.player),
                      lambda state: state.has("Goomba", self.player))
@@ -600,6 +604,8 @@ def set_rules(self, options : SMOOptions) -> None:
                      lambda state: state.has("Lava Bubble", self.player))
             set_rule(self.multiworld.get_location("Luncheon Kingdom - Golden Turnip Recipe 3", self.player),
                      lambda state: state.has("Hammer Bro", self.player))
+            set_rule(self.multiworld.get_location("Luncheon Kingdom - A Tourist in the Luncheon Kingdom!", self.player),
+                     lambda state: state.can_reach_region("Sand Peace", self.player) and state.can_reach_region("Cascade Peace", self.player))
             if self.options.shop_sanity != 'off':
                 set_rule(self.multiworld.get_location("Souvenir Forks", self.player),
                          lambda state: state.has("Hammer Bro", self.player) and state.has("Lava Bubble", self.player))
@@ -645,6 +651,21 @@ def set_rules(self, options : SMOOptions) -> None:
                      lambda state: state.has("Banzai Bill", self.player))
                 set_rule(self.multiworld.get_location("Moon Kingdom - Fly to the Treasure Chest and Back", self.player),
                      lambda state: state.has("Banzai Bill", self.player))
+
+                set_rule(self.multiworld.get_location("Moon Kingdom - A Tourist in the Moon Kingdom!", self.player),
+                     lambda state: state.can_reach_region("Sand Peace", self.player) and
+                                   state.can_reach_region("Cascade Peace", self.player) and
+                                   state.can_reach_region("Luncheon Peace", self.player))
+                set_rule(self.multiworld.get_location("Mushroom Kingdom - A Tourist in the Mushroom Kingdom!", self.player),
+                     lambda state: state.can_reach_region("Sand Peace", self.player) and
+                                   state.can_reach_region("Cascade Peace", self.player) and
+                                   state.can_reach_region("Luncheon Peace", self.player) and
+                                   state.can_reach_region("Post Game", self.player))
+                set_rule(self.multiworld.get_location("Sand Kingdom - Round-the-World Tourist", self.player),
+                     lambda state: state.can_reach_region("Sand Peace", self.player) and
+                                   state.can_reach_region("Cascade Peace", self.player) and
+                                   state.can_reach_region("Luncheon Peace", self.player) and
+                                   state.can_reach_region("Post Game", self.player))
 
 
 # for debugging purposes, you may want to visualize the layout of your world. Uncomment the following code to
