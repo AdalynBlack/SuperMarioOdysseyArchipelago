@@ -30,7 +30,7 @@ A mod adding Archipelago Multi World support to Super Mario Odyssey.
 - Create a new User Profile (Options > User Profiles > +)
 - Enable LAN Mode (Options > Settings > Network)
 
-### Suyu
+### Eden
 - Right Click on Super Mario Odyssey in the game menu and select `Open Mod Data Location`.
 - Extract `SMO_Archipelago_Vx.x_Emu.zip` and Place `SMOAP` folder in the mods directory that opened.
 </details>
