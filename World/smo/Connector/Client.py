@@ -593,7 +593,6 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
             data = bytearray(await reader.read(packet_size))
             packet.deserialize(data)
 
-            old_disconnect = ctx.disconnect_timer
             if packet.header.packet_type != PacketType.Unknown:
                 ctx.disconnect_timer = 15
                 # Prevent appending server message before connected to server.
@@ -605,12 +604,9 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
                     # Insert init packet at 0 in queue so other packets added before aren't dropped.
                     ctx.proxy_msgs.insert(0, init_packet)
 
-                    if old_disconnect < -5:
-                        ctx.ui.print_json([{"type": "color", "color": "green", "text": "SMO Connected"}])
+                    ctx.ui.print_json([{"type": "color", "color": "green", "text": "SMO Connected"}])
+                    ctx.player_data.add_message("\x1b[32mConnected to the AP Client")
 
-                        ctx.player_data.add_message("\x1b[32mConnected to the AP Client")
-
-                    ctx.ui.print_json([{"type": "color", "color": "orange", "text": "Set Connect"}])
                     ctx.game_connected = True
                     ctx.awaiting_connection = False
 
