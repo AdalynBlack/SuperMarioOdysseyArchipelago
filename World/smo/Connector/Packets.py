@@ -364,6 +364,7 @@ class ApInfoPacket:
 
         for i in range(3):
             if i < len(self.info):
+                self.info[i] = self.info[i].replace('%', '%%')
                 if len(self.info[i]) >= 40:
                     data += self.info[i][:40].encode()
                 else:
@@ -392,6 +393,9 @@ class ApInfoPacket:
         self.info.append(data[offset:offset + self.INFO_SIZE].decode("utf-16"))
         offset += self.INFO_SIZE
         self.info.append(data[offset:offset + self.INFO_SIZE].decode("utf-16"))
+
+        for i in range(3):
+            self.info[i] = self.info[i].replace('%%', '%')
 
 class ShopReplace:
     info_type : int = 255
