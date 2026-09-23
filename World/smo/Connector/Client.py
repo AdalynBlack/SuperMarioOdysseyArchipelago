@@ -564,6 +564,11 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
     if not ctx.awaiting_connection:
         ctx.ui.print_json([{"type": "color", "color": "orange", "text": "Connect receieved while already connected. Rejecting connection attempt"}])
         writer.close()
+
+        if ctx.disconnect_timer <= 0:
+            ctx.game_connected = False
+            ctx.awaiting_connection = True
+            await asyncio.sleep(1.0)
         return
     ctx.awaiting_connection = False
 
