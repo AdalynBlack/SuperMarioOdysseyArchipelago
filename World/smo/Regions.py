@@ -431,9 +431,9 @@ def create_regions(self, world, player):
         if self.options.goal > self.options.goal.option_sand:
             create_locs(regSandPeaceCaptures, *loc_Sand_Captures_Peace)
             create_locs(regLakeCaptures, *loc_Lake_Captures)
-            create_locs(regWoodedCaptures, *loc_Wooded_Captures)
 
         if self.options.goal > self.options.goal.option_lake:
+            create_locs(regWoodedCaptures, *loc_Wooded_Captures)
             create_locs(regWoodedStoryMazeCaptures, *loc_Wooded_Captures_Post_Maze)
             create_locs(regCloudCaptures, *loc_Cloud_Captures)
             create_locs(regLostCaptures, *loc_Lost_Captures)

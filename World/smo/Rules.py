@@ -409,7 +409,7 @@ def set_rules(self, options : SMOOptions) -> None:
                  lambda state: state.has("Goomba", self.player) or
                  state.has("Glitch Logic", self.player))
 
-        if self.options.goal > self.options.goal.option_lake:
+        if self.options.goal > self.options.goal.option_sand:
             # Sand Peace
             set_rule(self.multiworld.get_location("Sand Kingdom - Fishing in the Oasis", self.player),
                      lambda state: state.has("Lakitu", self.player))
@@ -428,6 +428,7 @@ def set_rules(self, options : SMOOptions) -> None:
                 set_rule(self.multiworld.get_location("Inverted Pyramid Model", self.player),
                          lambda state: state.has("Mini Rocket", self.player) and state.has("Bullet Bill", self.player) and state.has("Knucklotec's Fist", self.player))
 
+        if self.options.goal > self.options.goal.option_lake:
             # Wooded
             set_rule(self.multiworld.get_location("Wooded Kingdom - By the Babbling Brook in the Deep Woods", self.player),
                      lambda state: state.has("Coin Coffer", self.player) or state.has("T-Rex", self.player))
