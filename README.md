@@ -42,7 +42,7 @@ A mod adding Archipelago Multi World support to Super Mario Odyssey.
     - On Switch: this is found by entering the `ipconfig` command into command prompt on Windows
     - On Emulator: leave the IP at its default value: `127.0.0.1`
 - When prompted, the `Port` is `1027` by default which does not need to be changed.
-- To show these menus again and change your IP and Port, hold ZL while starting the game
+- To change your IP later, hold ZL while closing the pause menu
 - After connecting, both the client and game should display a confirmation message
 - Enter the IP and Port for your lobby into the SMO Client. For example: `archipelago.gg:38281`. You will then be prompted for a Username and Password
 - At this point, everything should be working and you should be able to send and receive checks
