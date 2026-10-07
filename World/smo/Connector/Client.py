@@ -456,9 +456,17 @@ class SMOContext(SuperContext):
                                             packet_data=[net_item.item - 3701, ItemType.Capture, index, "", "", 0])
                         # Filler
                         case -2:
-                            if str(net_item.location) in self.slot_data["coin_values"][str(net_item.player)]:
-                                packet = Packet(guid=self.proxy_guid, packet_type=PacketType.Check,
-                                    packet_data=[net_item.item, ItemType.Coins, index, "", "", self.slot_data["coin_values"][str(net_item.player)][str(net_item.location)]])
+                            coins = 50
+
+                            if str(net_item.player) not in self.slot_data["coin_values"]:
+                                coins = 50
+                            elif str(net_item.location) in self.slot_data["coin_values"][str(net_item.player)]:
+                                coins = self.slot_data["coin_values"][str(net_item.player)][str(net_item.location)]
+                            else:
+                                logger.error(f'Invalid coin placement from "{str(net_item.player)}" at "{str(net_item.location)}"')
+
+                            packet = Packet(guid=self.proxy_guid, packet_type=PacketType.Check,
+                                packet_data=[net_item.item, ItemType.Coins, index, "", "", coins])
                         # Flag items
                         case -4:
                             pass
