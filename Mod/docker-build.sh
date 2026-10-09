@@ -8,6 +8,9 @@ docker run -t --rm         \
   -u $(id -u):$(id -g)  \
   -v "/$PWD/":/app/:Z   \
   -e ISEMU=${ISEMU}     \
+  -e COMPATIBILITY_VERSION=${COMPATIBILITY_VERSION} \
+  -e RELEASE_VERSION=${RELEASE_VERSION} \
+  -e APWORLD_VERSION=${APWORLD_VERSION} \
   -e make_args="$@"     \
   smoo-client-build     \
 ;

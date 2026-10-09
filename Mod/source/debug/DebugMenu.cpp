@@ -57,6 +57,7 @@ bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, int d
         return false;
 
     sead::TextWriter *gTextWriter = ImmOverlayMenu::sInstance->gTextWriter;
+    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, .8f);
 
     gTextWriter->printf("FPS: %d\n", static_cast<int>(round(Application::sInstance->mFramework->calcFps())));
 
@@ -68,6 +69,10 @@ bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, int d
 
     sead::Heap* clientHeap = Client::getClientHeap();
     sead::Heap *gmHeap = GameModeManager::instance()->getHeap();
+
+    gTextWriter->mColor = sead::Color4f(0.392f, 0.584f, 0.929f, .8f);
+    gTextWriter->printf("%s", RELEASE_VERSION);
+    gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, .8f);
 
     if (clientHeap) {
         gTextWriter->printf("Client Heap Free Size: %f/%f\n", clientHeap->getFreeSize() * 0.001f, clientHeap->getSize() * 0.001f);

@@ -113,6 +113,8 @@ void Client::init(al::LayoutInitInfo const &initInfo, GameDataHolderAccessor hol
 
     Logger::log("Heap Free Size: %f/%f\n", mHeap->getFreeSize() * 0.001f, mHeap->getSize() * 0.001f);
     sInstance->hasStarted = true;
+
+    sInstance->appendMessage("Mod release tag is \x1b[35m%s\x1b[0m", RELEASE_VERSION);
 }
 
 /**

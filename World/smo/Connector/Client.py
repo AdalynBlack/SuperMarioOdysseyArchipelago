@@ -11,6 +11,7 @@ from MultiServer import Endpoint
 from CommonClient import get_base_parser, gui_enabled, logger
 from typing import List, Any
 from .Packets import PacketHeader, PacketType, Packet, ItemType
+from .ReleaseData import ReleaseData
 
 from .Data import inverse_shop_items, shop_items, get_item_type, worlds, world_alias, valid_warps, inverse_worlds, \
     multi_moon_locations, world_prefixes
@@ -613,7 +614,7 @@ async def handle_proxy(reader : asyncio.StreamReader, writer : asyncio.StreamWri
                     ctx.proxy_msgs.insert(0, init_packet)
 
                     ctx.ui.print_json([{"type": "color", "color": "green", "text": "SMO Connected"}])
-                    ctx.player_data.add_message("\x1b[32mConnected to the AP Client")
+                    ctx.player_data.add_message(f"\x1b[32mConnected to the AP Client ({ReleaseData.release_version})")
 
                     ctx.game_connected = True
                     ctx.awaiting_connection = False

@@ -13,8 +13,7 @@ cp -r ./atmosphere/contents/0100000000010000/romfs/* ./SMOAP/romfs/; or return
 cp -r ./atmosphere/contents/0100000000010000/exefs/* ./SMOAP/exefs/; or return
 cp -r ./atmosphere/exefs_patches/StarlightBase/* ./SMOAP/exefs/; or return
 
-set VERSION $(git describe --tags --abbrev)
-echo $VERSION > ./SMOAP/SMOAP_VERSION
+echo $RELEASE_VERSION > ./SMOAP/SMOAP_VERSION
 
 rm -f SMO_Archipelago_*_Emu.zip
-zip -r SMO_Archipelago_{$VERSION}_Emu.zip ./SMOAP/
+zip -r SMO_Archipelago_{$RELEASE_VERSION}_Emu.zip ./SMOAP/
