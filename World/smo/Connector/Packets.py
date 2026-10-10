@@ -348,6 +348,25 @@ class ChangeStagePacket:
         offset += 1
         self.sub_scenario_type = byte(int.from_bytes(data[offset:offset + 1], "little"))
 
+# Proper utf-8 truncation as shown in https://stackoverflow.com/a/13738452
+# Allows truncating to a specific length in bytes, while fully excluding multi-byte charcters if they cross the length boundary
+def utf8_lead_byte(b: int) -> bool:
+    '''A UTF-8 intermediate byte starts with the bits 10xxxxxx.'''
+
+    # (b & 0xC0) != 0x80 # Python 3 no need for ord()
+    return (b & 0xC0) != 0x80
+
+def utf8_byte_truncate(text: str, max_bytes: int) -> bytes:
+    '''If text[max_bytes] is not a lead byte, back up until a lead byte is
+    found and truncate before that character.'''
+    utf8 = text.encode('utf8')
+    if len(utf8) <= max_bytes:
+        return utf8
+    i = max_bytes
+    while i > 0 and not utf8_lead_byte(utf8[i]):
+        i -= 1
+    return utf8[:i]
+
 class ApInfoPacket:
     INFO_SIZE : int = 40
     info_type : int = -1
@@ -381,7 +400,7 @@ class ApInfoPacket:
             if i < len(self.info):
                 self.info[i] = self.info[i].replace('%', '%%')
                 if len(self.info[i]) >= 40:
-                    data += self.info[i][:40].encode()
+                    data += utf8_byte_truncate(self.info[i], 40)
                 else:
                     data += self.info[i].encode()
 
