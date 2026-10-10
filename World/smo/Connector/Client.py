@@ -793,7 +793,7 @@ def launch(*launch_args: str):
         await ctx.exit_event.wait()
 
 
-    Utils.init_logging("SMOClient")
+    Utils.init_logging("SMOClient", exception_logger="Client")
     # options = Utils.get_options()
 
     import colorama
