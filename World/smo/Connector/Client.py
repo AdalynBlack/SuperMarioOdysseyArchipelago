@@ -85,6 +85,19 @@ class SMOCommandProcessor(SuperCommandProcessor):
                 self.ctx.proxy_msgs.append(Packet(guid=self.ctx.proxy_guid, packet_type=PacketType.ChangeStage,
                                                  packet_data=[kingdom, scenario]))
 
+    def _cmd_slot(self):
+        """
+        Display the active options according to slot data received from the lobby.
+        """
+        if isinstance(self.ctx, SMOContext):
+            do_not_display = ["shop_replace_data", "coin_values",
+                              "shop_games", "shop_players", "shop_ap_items",
+                              "shine_replace_data", "shine_items",
+                              "shine_slots", "shine_games"]
+            for key in self.ctx.slot_data:
+                if key not in do_not_display:
+                    logger.info(f"{key}: {self.ctx.slot_data[key]}")
+
     def _cmd_deathlink(self, enabled = ""):
         """Enable/Disable deathlink
 
