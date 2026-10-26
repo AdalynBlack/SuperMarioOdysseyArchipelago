@@ -403,6 +403,9 @@ class SMOContext(SuperContext):
                 self.death_link_enabled = self.forced_death_link if self.forced_death_link != None else self.death_link_enabled
                 self.logged_in = True
 
+                if 'progressive_moons' not in self.slot_data:
+                    self.ui.print_json([{'type': 'color', 'color': 'orange', 'text': 'Old slot-data detected. Universal Tracker\'s logic may not be entirely accurate'}])
+
                 if self.death_link_enabled:
                     self.server_msgs.append({"cmd" : "ConnectUpdate", "tags" : ["AP", "DeathLink"]})
                 self.server_msgs.append({"cmd" : "Get", "keys" : [f"{self.player.name}_scenarios"]})
