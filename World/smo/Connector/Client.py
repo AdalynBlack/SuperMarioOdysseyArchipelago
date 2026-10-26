@@ -768,7 +768,6 @@ def launch(*launch_args: str):
         args = parser.parse_args(launch_args)
 
         ctx = SMOContext(args.connect, args.password)
-        logger.info("Starting Super Mario Odyssey proxy server")
 
         ctx.proxy = asyncio.start_server(functools.partial(handle_proxy, ctx=ctx), "0.0.0.0", 1027)
         ctx.proxy_chat = asyncio.create_task(proxy_chat(ctx) , name="ChatLoop")
@@ -782,6 +781,7 @@ def launch(*launch_args: str):
             ctx.run_gui()
         ctx.run_cli()
 
+        logger.info("Starting Super Mario Odyssey proxy server")
         try:
             await ctx.proxy
             await ctx.proxy_chat
