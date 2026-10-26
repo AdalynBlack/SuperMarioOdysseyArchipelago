@@ -71,7 +71,7 @@ bool DebugMenu::draw(sead::Viewport *viewport, HakoniwaSequence *sequence, int d
     sead::Heap *gmHeap = GameModeManager::instance()->getHeap();
 
     gTextWriter->mColor = sead::Color4f(0.392f, 0.584f, 0.929f, .8f);
-    gTextWriter->printf("%s", RELEASE_VERSION);
+    gTextWriter->printf(RELEASE_VERSION "\n");
     gTextWriter->mColor = sead::Color4f(1.f, 1.f, 1.f, .8f);
 
     if (clientHeap) {
