@@ -247,7 +247,7 @@ def create_regions(self, world, player):
         create_locs(regMoon, *loc_Moon.keys())
     world.regions.append(regMoon)
 
-    if self.options.shop_sanity != 'off':
+    if self.options.shop_sanity.value != 'off':
         regMoonOutfit = Region("Moon Gift Outfit", player, world, "Moon Gift Outfit")
         if self.options.goal > self.options.goal.option_luncheon:
             create_locs(regMoonOutfit, *loc_Moon_Outfit.keys())
@@ -323,7 +323,7 @@ def create_regions(self, world, player):
     world.regions.append(regMushroomLuncheon)
 
     # Shops
-    if self.options.shop_sanity != "off":
+    if self.options.shop_sanity.value != "off":
         regCapShop = Region("Cap Shop", player, world, "Shop")
         regCascadeShop = Region("Cascade Shop", player, world, "Shop")
         regSandShop = Region("Sand Shop", player, world, "Shop")
@@ -607,7 +607,7 @@ def create_regions(self, world, player):
 
     regBowserMecha.connect(regBowserPeace, "Bowser World Peace")
     regBowserPeace.connect(regMoon, "Enter Moon", lambda state: count_moons(self, state, "Bowser", player) >= self.moon_counts["bowser"])
-    if self.options.shop_sanity != 'off':
+    if self.options.shop_sanity.value != 'off':
         regBowserPeace.connect(regMoonOutfit, "Obtain Mario Tuxedo", lambda state: count_moons(self, state, "Bowser", player) >= self.moon_counts["bowser"])
 
     regPostMoon.connect(regPostGame)
@@ -615,7 +615,7 @@ def create_regions(self, world, player):
     regPostGame.connect(regDarker, "Darker Access", lambda state: total_moons(self, state, player) >= self.moon_counts["darker"])
 
     # Shop Connections
-    if self.options.shop_sanity != "off":
+    if self.options.shop_sanity.value != "off":
         if self.options.capture_sanity.value == self.options.capture_sanity.option_true:
             regMetro.connect(regMetroShop, "Metro Shop", lambda state: state.has("Spark Pylon", player)
                              and state.has("Sherm", player))

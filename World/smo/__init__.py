@@ -413,10 +413,16 @@ class SMOWorld(World):
                     # Use the moon counts from the original generation
                     self.moon_counts = passthrough["MoonCounts"]
                     self.options.goal.value = passthrough["Goal"]
-                    self.options.progressive_moons.value = passthrough["ProgressiveMoons"]
-                    self.options.shop_sanity.value = passthrough["ShopSanity"]
                     self.options.capture_sanity.value = passthrough["CaptureSanity"]
-                    self.options.common_capture_skips.value = passthrough["CommonCaptureSkips"]
+
+                    if 'ProgressiveMoons' in passthrough:
+                        self.options.progressive_moons.value = passthrough["ProgressiveMoons"]
+                        self.options.shop_sanity.value = passthrough["ShopSanity"]
+                        self.options.common_capture_skips.value = passthrough["CommonCaptureSkips"]
+                    else:
+                        self.options.progressive_moons.value = False
+                        self.options.shop_sanity.value = 'all'
+                        self.optoins.common_capture_skips.value = False
         elif self.options.counts > 0:
             self.randomize_moon_amounts()
         create_regions(self, self.multiworld, self.player)
@@ -675,23 +681,23 @@ class SMOWorld(World):
         # Outfits
         for location in outfits:
             if location in locations:
-                if self.options.shop_sanity == "outfits" or self.options.shop_sanity == "all":
+                if self.options.shop_sanity.value == "outfits" or self.options.shop_sanity.value == "all":
                     pool.append(location)
-                elif self.options.shop_sanity == "shuffle":
+                elif self.options.shop_sanity.value == "shuffle":
                     item_names.append(location)
-                elif self.options.shop_sanity != "off":
+                elif self.options.shop_sanity.value != "off":
                     self.get_location(location).place_locked_item(self.create_item(location))
 
         # Souvenirs and stickers
         for location in shop_items:
             if location in locations:
-                if self.options.shop_sanity == "non_outfits" or self.options.shop_sanity == "all":
+                if self.options.shop_sanity.value == "non_outfits" or self.options.shop_sanity.value == "all":
                     pool.append(location)
-                elif self.options.shop_sanity != "off":
+                elif self.options.shop_sanity.value != "off":
                     self.get_location(location).place_locked_item(self.create_item(location))
 
         # Shop sanity shuffle
-        if self.options.shop_sanity == "shuffle":
+        if self.options.shop_sanity.value == "shuffle":
             while len(item_names) > 0:
                 item = item_names.pop(random.randint(0, len(item_names) - 1))
                 self.get_location(item).place_locked_item(self.create_item(item))
