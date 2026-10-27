@@ -432,6 +432,19 @@ class SMOWorld(World):
             # Frog has to be sphere 1 if frogless isn't in logic
             self.multiworld.local_early_items[self.player]["Frog"] = 1
 
+        if self.options.counts.value == self.options.counts.option_custom_weighted:
+            kingdoms = list(self.moon_counts.keys())
+            for kingdom in kingdoms:
+                if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
+                    kingdoms.remove(kingdom)
+
+            vanilla_max = sum([self.max_counts[kingdom] for kingdom in kingdoms])
+
+            if self.options.required_moon_total.value > vanilla_max:
+                raise OptionError(f'Too many moons are required for the selected goal. Maximum is {vanilla_max}')
+            if self.options.required_moon_total.value < len(kingdoms):
+                raise OptionError(f'Too few moons are required for the selected goal. Minimum is {len(kingdoms)}')
+
     def generate_basic(self) -> None:
         pass
 
@@ -740,18 +753,6 @@ class SMOWorld(World):
         # Reset placed counts so multi worlds support more than one SMO instance
         for key in self.placed_counts.keys():
             self.placed_counts[key] = 0
-
-    def generate_early(self):
-        kingdoms = list(self.moon_counts.keys())
-        vanilla_total = sum([self.vanilla_moon_counts[kingdom] for kingdom in kingdoms])
-
-        if self.options.lock_ruined.value:
-            kingdoms.remove("ruined")
-
-        if self.options.required_moon_total.value > vanilla_total:
-            raise OptionError(f'Too many moons are required for the selected goal. Maximum is {vanilla_total}')
-        if self.options.required_moon_total.value < len(kingdoms):
-            raise OptionError(f'Too few moons are required for the selected goal. Minimum is {len(kingdoms)}')
 
     def randomize_moon_amounts(self):
         """ Randomizes the moon requirements for progressing to each kingdom."""
