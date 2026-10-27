@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from Options import Toggle, Choice, FreeText, PerGameCommonOptions, NamedRange, DeathLink, Visibility
+from Options import Toggle, Choice, FreeText, PerGameCommonOptions, NamedRange, DeathLink, Visibility, Range
 
 
 class Goal(Choice):
@@ -60,6 +60,7 @@ class RandomizeMoonCount(Choice):
     lock ruined: Moon counts still add up to 124, but ruined kingdom is always a 3 moon requirement.
     moderate: Up to +25% and down to -20% of normal per kingdom counts.
     extreme: Up to 200% of normal count.
+    custom_weighted: Moon requirements can be customized (see following options)
     """
     display_name = "Randomize Moon Requirements"
     #visibility = 0b1101
@@ -67,8 +68,47 @@ class RandomizeMoonCount(Choice):
     option_same_total_lock_ruined = 2
     option_moderate = 3
     option_extreme = 4
+    option_custom_weighted = 5
     option_off = 0
-    default = "off"
+    default = 5
+
+class RequiredMoonTotal(Range):
+    """The total number of moons required to unlock your goal kingdom
+    Max is 816, as all 61 toadette moons are not randomized, and the darker side multi can't be reached without first unlocking the kingdom
+    Must be at *least* equal to the number of kingdoms with moon requirements in your chosen goal, and at *most* equal to the number of moons possible before reaching your chosen goal kingdom. Will throw an OptionError if the required number of moons is invalid
+    Requires "Randomize Moon Requirements" to be set to "Custom Weighted"
+    """
+    display_name = "Required Moon Total"
+    range_start = 1
+    range_end = 816
+    default = 124
+
+class RequiredMoonWeighting(Range):
+    """Applies a weight for the number of moons required for each kingdom based on how far in the kingdom is
+    At 100: Your first kingdom will require very few moons, and your final kingdom require many
+    At -100: Your first kingdom will require a high number of moons, and your final kingdom will reuqire very few
+    Negative values are **not** recommended
+    Does very little if "Similar Moon Count Requirement Ratios" is enabled
+    Requires "Randomize Moon Requirements" to be set to "Custom Weighted"
+    """
+    display_name = 'Required Moon Weighting'
+    range_start = -100
+    range_end = 100
+    default = 30
+
+class SimilarMoonRequirementRatios(Toggle):
+    """If enabled, moon count requirements for each kingdom will be scaled according to RequiredMoonTotal, then randomized within +/- 5 of that scaled value
+    Requires "Randomize Moon Requirements" to be set to "Custom Weighted"
+    """
+    display_name = 'Similar Moon Count Requirement Ratios'
+    default = False
+
+class LockRuined(Toggle):
+    """If enabled, Ruined Kingdom will always require 3 moons
+    Requires "Randomize Moon Requirements" to be set to "Custom Weighted"
+    """
+    display_name = 'Lock Ruined'
+    default = False
 
 class MoonDistribution(Choice):
     """
@@ -173,5 +213,9 @@ class SMOOptions(PerGameCommonOptions):
     # replace: ReplaceUnneededMoons
     colors : RandomizeMoonColors
     counts : RandomizeMoonCount
+    required_moon_total : RequiredMoonTotal
+    required_moon_weighting : RequiredMoonWeighting
+    similar_moon_ratios : SimilarMoonRequirementRatios
+    lock_ruined : LockRuined
     death_link : SMODeathLink
 

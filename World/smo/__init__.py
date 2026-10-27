@@ -15,7 +15,7 @@ from worlds.AutoWorld import World
 from worlds.LauncherComponents import (Component, components, Type as component_type, SuffixIdentifier, launch as launch_component)
 from settings import Group, UserFolderPath
 from Utils import output_path
-
+from Options import OptionError
 
 def launch_client(*args: str):
     from .Connector.Client import launch
@@ -741,6 +741,18 @@ class SMOWorld(World):
         for key in self.placed_counts.keys():
             self.placed_counts[key] = 0
 
+    def generate_early(self):
+        kingdoms = list(self.moon_counts.keys())
+        vanilla_total = sum([self.vanilla_moon_counts[kingdom] for kingdom in kingdoms])
+
+        if self.options.lock_ruined.value:
+            kingdoms.remove("ruined")
+
+        if self.options.required_moon_total.value > vanilla_total:
+            raise OptionError(f'Too many moons are required for the selected goal. Maximum is {vanilla_total}')
+        if self.options.required_moon_total.value < len(kingdoms):
+            raise OptionError(f'Too few moons are required for the selected goal. Minimum is {len(kingdoms)}')
+
     def randomize_moon_amounts(self):
         """ Randomizes the moon requirements for progressing to each kingdom."""
         self.moon_counts = dict(self.vanilla_moon_counts)
@@ -805,6 +817,52 @@ class SMOWorld(World):
         elif self.options.counts == 4:
             for key in self.moon_counts.keys():
                 self.moon_counts[key] = random.randint(int(self.vanilla_moon_counts[key] * 1.0), int(self.vanilla_moon_counts[key] * 2.0))
+        elif self.options.counts == 5:
+            kingdoms.remove("dark")
+            kingdoms.remove("darker")
+
+            if self.options.lock_ruined.value:
+                kingdoms.remove("ruined")
+
+            for kingdom in kingdoms:
+                if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
+                    kingdoms.remove(kingdom)
+
+            vanilla_total = sum([self.vanilla_moon_counts[kingdom] for kingdom in kingdoms])
+            scaling_ratio = self.options.required_moon_total / vanilla_total
+
+            count = 0
+            for kingdom in kingdoms:
+                if self.options.similar_moon_ratios.value:
+                    self.moon_counts[kingdom] = max(int(scaling_ratio * self.vanilla_moon_counts[kingdom]) - 5, 1)
+                else:
+                    self.moon_counts[kingdom] = 1
+                count += self.moon_counts[kingdom]
+
+            temp_max_counts = {}
+            for kingdom in kingdoms:
+                if self.options.similar_moon_ratios.value:
+                    temp_max_counts[kingdom] = min(self.max_counts[kingdom], int(scaling_ratio * self.vanilla_moon_counts[kingdom]) + 5)
+                else:
+                    temp_max_counts[kingdom] = self.max_counts[kingdom]
+
+            def calculate_weight(kingdom):
+                normalized = (((self.kingdom_order[kingdom]) / (len(self.kingdom_order) + 1)) - 0.5)
+                scaled = normalized * self.options.required_moon_weighting.value / 100
+                return scaled + 0.5
+
+            weights = [calculate_weight(kingdom) for kingdom in kingdoms]
+            while count != self.options.required_moon_total.value and len(kingdoms) > 0:
+                index = random.choices(range(len(kingdoms)), weights=weights)[0]
+                selected = kingdoms[index]
+                self.moon_counts[selected] += 1
+                count += 1
+                if self.moon_counts[selected] == temp_max_counts[selected]:
+                    kingdoms.remove(selected)
+                    weights.remove(weights[index])
+            self.moon_counts['dark'] = int(self.vanilla_moon_counts['dark'] * scaling_ratio)
+            self.moon_counts['darker'] = int(self.vanilla_moon_counts['darker'] * scaling_ratio)
+
         if self.moon_counts["dark"] > self.moon_counts["darker"]:
             temp = self.moon_counts["darker"]
             self.moon_counts["darker"] = self.moon_counts["dark"]
