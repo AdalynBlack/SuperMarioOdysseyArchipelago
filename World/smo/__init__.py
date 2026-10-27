@@ -423,7 +423,7 @@ class SMOWorld(World):
                         self.options.progressive_moons.value = False
                         self.options.shop_sanity.value = 'all'
                         self.optoins.common_capture_skips.value = False
-        elif self.options.counts > 0:
+        elif self.options.counts.value > 0:
             self.randomize_moon_amounts()
         create_regions(self, self.multiworld, self.player)
 
@@ -759,7 +759,7 @@ class SMOWorld(World):
 
         kingdoms = list(self.moon_counts.keys())
         vanilla_total = 124
-        if self.options.counts == 1:
+        if self.options.counts.value == self.options.counts.option_same_total:
             kingdoms.remove("dark")
             kingdoms.remove("darker")
 
@@ -784,7 +784,7 @@ class SMOWorld(World):
                 count += 1
                 if self.moon_counts[selected] == temp_max_counts[selected]:
                     kingdoms.remove(selected)
-        elif self.options.counts == 2:
+        elif self.options.counts.value == self.options.counts.option_same_total_lock_ruined:
             kingdoms.remove("dark")
             kingdoms.remove("darker")
             kingdoms.remove("ruined")
@@ -810,14 +810,14 @@ class SMOWorld(World):
                 count += 1
                 if self.moon_counts[selected] == temp_max_counts[selected]:
                     kingdoms.remove(selected)
-        elif self.options.counts == 3:
+        elif self.options.counts.value == self.options.counts.option_moderate:
             for key in self.moon_counts.keys():
                 self.moon_counts[key] = random.randint(int(self.vanilla_moon_counts[key] * 0.8), int(self.vanilla_moon_counts[key] * 1.25))
 
-        elif self.options.counts == 4:
+        elif self.options.counts.value == self.options.counts.option_extreme:
             for key in self.moon_counts.keys():
                 self.moon_counts[key] = random.randint(int(self.vanilla_moon_counts[key] * 1.0), int(self.vanilla_moon_counts[key] * 2.0))
-        elif self.options.counts == 5:
+        elif self.options.counts.value == self.options.counts.option_custom_weighted:
             kingdoms.remove("dark")
             kingdoms.remove("darker")
 
@@ -870,12 +870,12 @@ class SMOWorld(World):
         for key in self.moon_counts.keys():
             if self.moon_counts[key] > self.max_counts[key]:
                 self.moon_counts[key] = self.max_counts[key]
-        if self.options.counts == 1 or self.options.counts == 2:
+        if self.options.counts.value == 1 or self.options.counts.value == 2:
             kingdoms = list(self.moon_counts.keys())
             kingdoms.remove("dark")
             kingdoms.remove("darker")
 
-            if self.options.counts == 2:
+            if self.options.counts.value == 2:
                 kingdoms.remove("ruined")
 
             for kingdom in kingdoms:
@@ -909,7 +909,7 @@ class SMOWorld(World):
         progitempool.sort(key=sort_func)
 
     def write_spoiler_header(self, spoiler_handle: TextIO) -> None:
-        if self.options.counts > 0:
+        if self.options.counts.value > 0:
             text = f"{'Moon Requirements:':33}"
             for key in self.moon_counts.keys():
                 if world_list.index(key.capitalize()) <= self.options.goal:
