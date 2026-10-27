@@ -600,7 +600,7 @@ class SMOWorld(World):
         if self.options.goal == self.options.goal.option_dark:
             kingdoms : list = list(range(15))
             while sum(revised_counts[0:15]) < self.moon_counts["dark"]:
-                index = kingdoms[random.randint(0, len(kingdoms) - 1)]
+                index = kingdoms[self.random.randint(0, len(kingdoms) - 1)]
                 if revised_counts[index] >= self.max_checks[world_list[index].lower()]:
                     kingdoms.remove(index)
                 else:
@@ -608,7 +608,7 @@ class SMOWorld(World):
         elif self.options.goal == self.options.goal.option_darker:
             kingdoms: list = list(range(16))
             while sum(revised_counts[0:16]) < self.moon_counts["darker"]:
-                index = kingdoms[random.randint(0, len(kingdoms) - 1)]
+                index = kingdoms[self.random.randint(0, len(kingdoms) - 1)]
                 if revised_counts[index] >= self.max_checks[world_list[index].lower()]:
                     kingdoms.remove(index)
                 else:
@@ -699,7 +699,7 @@ class SMOWorld(World):
         # Shop sanity shuffle
         if self.options.shop_sanity.value == "shuffle":
             while len(item_names) > 0:
-                item = item_names.pop(random.randint(0, len(item_names) - 1))
+                item = item_names.pop(self.random.randint(0, len(item_names) - 1))
                 self.get_location(item).place_locked_item(self.create_item(item))
 
         # Captures
@@ -779,7 +779,7 @@ class SMOWorld(World):
                 temp_max_counts[kingdom] = min(self.max_counts[kingdom], self.vanilla_moon_counts[kingdom] + 5)
 
             while count != vanilla_total and len(kingdoms) > 0:
-                selected = kingdoms[random.randint(0, len(kingdoms)-1)]
+                selected = kingdoms[self.random.randint(0, len(kingdoms)-1)]
                 self.moon_counts[selected] += 1
                 count += 1
                 if self.moon_counts[selected] == temp_max_counts[selected]:
@@ -805,18 +805,18 @@ class SMOWorld(World):
                 temp_max_counts[kingdom] = min(self.max_counts[kingdom], self.vanilla_moon_counts[kingdom] + 5)
 
             while count != vanilla_total and len(kingdoms) > 0:
-                selected = kingdoms[random.randint(0, len(kingdoms)-1)]
+                selected = kingdoms[self.random.randint(0, len(kingdoms)-1)]
                 self.moon_counts[selected] += 1
                 count += 1
                 if self.moon_counts[selected] == temp_max_counts[selected]:
                     kingdoms.remove(selected)
         elif self.options.counts.value == self.options.counts.option_moderate:
             for key in self.moon_counts.keys():
-                self.moon_counts[key] = random.randint(int(self.vanilla_moon_counts[key] * 0.8), int(self.vanilla_moon_counts[key] * 1.25))
+                self.moon_counts[key] = self.random.randint(int(self.vanilla_moon_counts[key] * 0.8), int(self.vanilla_moon_counts[key] * 1.25))
 
         elif self.options.counts.value == self.options.counts.option_extreme:
             for key in self.moon_counts.keys():
-                self.moon_counts[key] = random.randint(int(self.vanilla_moon_counts[key] * 1.0), int(self.vanilla_moon_counts[key] * 2.0))
+                self.moon_counts[key] = self.random.randint(int(self.vanilla_moon_counts[key] * 1.0), int(self.vanilla_moon_counts[key] * 2.0))
         elif self.options.counts.value == self.options.counts.option_custom_weighted:
             kingdoms.remove("dark")
             kingdoms.remove("darker")
@@ -853,7 +853,7 @@ class SMOWorld(World):
 
             weights = [calculate_weight(kingdom) for kingdom in kingdoms]
             while count != self.options.required_moon_total.value and len(kingdoms) > 0:
-                index = random.choices(range(len(kingdoms)), weights=weights)[0]
+                index = self.random.choices(range(len(kingdoms)), weights=weights)[0]
                 selected = kingdoms[index]
                 self.moon_counts[selected] += 1
                 count += 1
