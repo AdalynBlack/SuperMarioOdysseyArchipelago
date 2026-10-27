@@ -434,7 +434,7 @@ class SMOWorld(World):
 
         if self.options.counts.value == self.options.counts.option_custom_weighted:
             kingdoms = list(self.moon_counts.keys())
-            for kingdom in kingdoms:
+            for kingdom in kingdoms.copy():
                 if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
                     kingdoms.remove(kingdom)
 
@@ -764,7 +764,7 @@ class SMOWorld(World):
             kingdoms.remove("dark")
             kingdoms.remove("darker")
 
-            for kingdom in kingdoms:
+            for kingdom in kingdoms.copy():
                 if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
                     kingdoms.remove(kingdom)
 
@@ -790,7 +790,7 @@ class SMOWorld(World):
             kingdoms.remove("darker")
             kingdoms.remove("ruined")
 
-            for kingdom in kingdoms:
+            for kingdom in kingdoms.copy():
                 if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
                     kingdoms.remove(kingdom)
 
@@ -825,7 +825,7 @@ class SMOWorld(World):
             if self.options.lock_ruined.value:
                 kingdoms.remove("ruined")
 
-            for kingdom in kingdoms:
+            for kingdom in kingdoms.copy():
                 if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
                     kingdoms.remove(kingdom)
 
@@ -879,7 +879,7 @@ class SMOWorld(World):
             if self.options.counts.value == 2:
                 kingdoms.remove("ruined")
 
-            for kingdom in kingdoms:
+            for kingdom in kingdoms.copy():
                 if self.kingdom_order[kingdom] > self.kingdom_order[self.options.goal.current_key]:
                     kingdoms.remove(kingdom)
 
